@@ -52,7 +52,7 @@ export async function GET(request: Request): Promise<Response> {
     return json({ error: "Unauthorized cron trigger" }, 401);
   }
 
-  const runStateBefore = getMaintenanceRunState();
+  const runStateBefore = await getMaintenanceRunState();
 
   const url = new URL(request.url);
   const since = url.searchParams.get("since") || undefined;

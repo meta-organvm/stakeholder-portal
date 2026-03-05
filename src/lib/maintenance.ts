@@ -2,8 +2,7 @@
  * Maintenance cycle orchestration and scorecard persistence.
  */
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from "fs";
-import { dirname, join } from "path";
+
 import { runIngestionCycle, type IngestionCycleReport } from "./connectors/orchestrator";
 import {
   runEvaluationSuite,
@@ -56,54 +55,67 @@ export interface MaintenanceRunState {
   started_at: string | null;
 }
 
-let activeMaintenanceRun: Promise<MaintenanceScorecard> | null = null;
-let activeMaintenanceState: MaintenanceRunState = {
-  running: false,
-  scorecard_id: null,
-  started_at: null,
-};
+import { eq, desc } from "drizzle-orm";
+import { db } from "./db";
+import { singletonLocks, maintenanceRuns } from "./db/schema";
 
-function makeScorecardId(timestampIso: string): string {
-  return `maint-${timestampIso.replace(/[:.]/g, "-")}`;
-}
-
-function getScorecardPath(): string {
-  return (
-    process.env.MAINTENANCE_SCORECARD_PATH ??
-    join(process.cwd(), ".codex", "telemetry", "maintenance-scorecards.ndjson")
-  );
-}
-
-function persistScorecard(scorecard: MaintenanceScorecard): void {
-  const output = getScorecardPath();
-  try {
-    mkdirSync(dirname(output), { recursive: true });
-    appendFileSync(output, `${JSON.stringify(scorecard)}\n`, "utf-8");
-  } catch {
-    // Best-effort persistence by design.
+export async function getMaintenanceRunState(): Promise<MaintenanceRunState> {
+  const [lock] = await db.select().from(singletonLocks).where(eq(singletonLocks.name, "maintenance_run"));
+  if (!lock) {
+    return { running: false, scorecard_id: null, started_at: null };
   }
-}
 
-export function getMaintenanceRunState(): MaintenanceRunState {
-  return { ...activeMaintenanceState };
+  const [activeRun] = await db.select().from(maintenanceRuns).where(eq(maintenanceRuns.id, lock.lockedBy));
+  if (!activeRun) {
+    return { running: false, scorecard_id: null, started_at: null };
+  }
+
+  return {
+    running: true,
+    scorecard_id: activeRun.id,
+    started_at: activeRun.startedAt.toISOString(),
+  };
 }
 
 export async function runMaintenanceCycle(
   options: MaintenanceCycleOptions = {}
 ): Promise<MaintenanceScorecard> {
-  if (activeMaintenanceRun) {
-    return activeMaintenanceRun;
+  const startedAt = new Date().toISOString();
+  const runId = `maint-${startedAt.replace(/[:.]/g, "-")}`;
+
+  // Attempt to acquire lock via insert unique constraint
+  let lockAcquired = false;
+  try {
+    await db.insert(singletonLocks).values({
+      name: "maintenance_run",
+      lockedBy: runId,
+      lockedAt: new Date(),
+    });
+    lockAcquired = true;
+  } catch (err: unknown) {
+    const error = err as { code?: string };
+    // Postgres unique constraint violation
+    if (error.code === '23505') {
+       return null as unknown as MaintenanceScorecard; // Cannot run, already running
+    }
+    throw err;
   }
 
-  const startedAt = new Date().toISOString();
-  const runId = makeScorecardId(startedAt);
-  activeMaintenanceState = {
-    running: true,
-    scorecard_id: runId,
-    started_at: startedAt,
-  };
+  if (!lockAcquired) {
+    // This branch should ideally not be reached if the catch block handles all non-acquisition cases
+    // by either returning or re-throwing. However, keeping it for robustness if other errors occur
+    // that don't lead to a return/throw in the catch.
+    throw new Error("Maintenance cycle could not acquire lock for an unknown reason.");
+  }
 
-  const runPromise = (async (): Promise<MaintenanceScorecard> => {
+  // Insert ledger entry
+  await db.insert(maintenanceRuns).values({
+    id: runId,
+    status: "running",
+    startedAt: new Date(startedAt),
+  });
+
+  try {
     const ingestion = await runIngestionCycle({
       incremental: options.incremental,
       since: options.since,
@@ -158,49 +170,36 @@ export async function runMaintenanceCycle(
     };
 
     if (options.persist_scorecard !== false) {
-      persistScorecard(scorecard);
+      await db.update(maintenanceRuns).set({
+        completedAt: new Date(completedAt),
+        status: status,
+        scorecard: scorecard,
+      }).where(eq(maintenanceRuns.id, runId));
     }
 
     return scorecard;
-  })();
-
-  activeMaintenanceRun = runPromise;
-  try {
-    return await runPromise;
-  } finally {
-    activeMaintenanceRun = null;
-    activeMaintenanceState = {
-      running: false,
-      scorecard_id: null,
-      started_at: null,
-    };
-  }
-}
-
-export function readRecentMaintenanceScorecards(limit = 20): MaintenanceScorecard[] {
-  const path = getScorecardPath();
-  if (!existsSync(path)) return [];
-
-  let raw = "";
-  try {
-    raw = readFileSync(path, "utf-8");
-  } catch {
-    return [];
-  }
-
-  const lines = raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
-  const recent = lines.slice(-Math.max(1, limit));
-
-  const parsed: MaintenanceScorecard[] = [];
-  for (const line of recent) {
-    try {
-      parsed.push(JSON.parse(line) as MaintenanceScorecard);
-    } catch {
-      // Skip malformed lines.
+  } catch (error) {
+    if (options.persist_scorecard !== false) {
+      await db.update(maintenanceRuns).set({
+        completedAt: new Date(),
+        status: "failed",
+      }).where(eq(maintenanceRuns.id, runId));
     }
+    throw error;
+  } finally {
+    await db.delete(singletonLocks).where(eq(singletonLocks.name, "maintenance_run"));
   }
-  return parsed.reverse();
 }
+
+export async function readRecentMaintenanceScorecards(limit = 20): Promise<MaintenanceScorecard[]> {
+  const rows = await db
+    .select({ scorecard: maintenanceRuns.scorecard })
+    .from(maintenanceRuns)
+    .orderBy(desc(maintenanceRuns.startedAt))
+    .limit(limit);
+
+  return rows
+    .map(row => row.scorecard as unknown as MaintenanceScorecard)
+    .filter(Boolean);
+}
+

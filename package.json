@@ -14,10 +14,18 @@
     "maintenance:run": "tsx scripts/run-maintenance.ts",
     "validate-manifest": "tsx scripts/validate-manifest.ts",
     "generate": "python3 scripts/generate-manifest.py",
-    "prebuild": "npm run generate -- --allow-stale-manifest && npm run validate-manifest"
+    "prebuild": "npm run generate -- --allow-stale-manifest && npm run validate-manifest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "ci:quality-gate": "tsx scripts/ci-quality-gate.ts",
+    "escalation:seed": "tsx -e \"import('@/lib/alert-audit').then(m => m.seedEscalationPolicies()).then(() => console.log('Policies seeded.'))\""
   },
   "dependencies": {
+    "drizzle-orm": "0.45.1",
     "next": "^15.3.0",
+    "next-auth": "5.0.0-beta.30",
+    "pg": "8.20.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^9.0.0"
@@ -26,8 +34,11 @@
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.0.0",
+    "@types/pg": "8.18.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "dotenv": "17.3.1",
+    "drizzle-kit": "0.31.9",
     "eslint": "^9.38.0",
     "eslint-config-next": "^15.5.12",
     "postcss": "^8.5.0",

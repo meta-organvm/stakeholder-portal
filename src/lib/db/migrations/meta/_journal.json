@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1772735633169,
+      "tag": "0000_solid_gertrude_yorkes",
+      "breakpoints": true
+    }
+  ]
+}

@@ -194,7 +194,7 @@ export async function GET(request: Request): Promise<Response> {
       metrics: getMetricsSnapshot(),
       feedback: getFeedbackStats(),
       audit,
-      maintenance_run: getMaintenanceRunState(),
+      maintenance_run: await getMaintenanceRunState(),
       alerts,
       alert_status: getOverallAlertStatus(alerts),
     });
@@ -207,21 +207,21 @@ export async function GET(request: Request): Promise<Response> {
     const parsed = limitRaw ? Number.parseInt(limitRaw, 10) : 10;
     const limit = Number.isFinite(parsed) && parsed > 0 ? Math.min(parsed, 100) : 10;
     return json({
-      scorecards: readRecentMaintenanceScorecards(limit),
+      scorecards: await readRecentMaintenanceScorecards(limit),
     });
   }
 
   if (operation === "health") {
     const auth = authorizeAction(request, "metrics", "read", "admin_health_read");
     if (!auth.ok) return auth.response;
-    const latest = readRecentMaintenanceScorecards(1)[0] ?? null;
+    const latest = (await readRecentMaintenanceScorecards(1))[0] ?? null;
     if (latest) {
       return json({
         status: latest.status,
         alerts: latest.alerts,
         scorecard_id: latest.id,
         completed_at: latest.completed_at,
-        maintenance_run: getMaintenanceRunState(),
+        maintenance_run: await getMaintenanceRunState(),
       });
     }
     const audit = getAuditStats();
@@ -230,7 +230,7 @@ export async function GET(request: Request): Promise<Response> {
       status: getOverallAlertStatus(alerts),
       alerts,
       scorecard_id: null,
-      maintenance_run: getMaintenanceRunState(),
+      maintenance_run: await getMaintenanceRunState(),
     });
   }
 
