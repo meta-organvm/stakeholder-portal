@@ -1,5 +1,10 @@
 import { submitFeedback, isValidSignal, getFeedbackStats } from "@/lib/feedback";
 
+const MAX_QUERY_CHARS = 2000;
+const MAX_RESPONSE_CHARS = 4000;
+const MAX_COMMENT_CHARS = 1000;
+const MAX_CITATION_IDS = 50;
+
 export async function POST(request: Request) {
   let body: unknown;
   try {
@@ -26,10 +31,22 @@ export async function POST(request: Request) {
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
+  if (query.length > MAX_QUERY_CHARS) {
+    return new Response(
+      JSON.stringify({ error: `query exceeds ${MAX_QUERY_CHARS} characters` }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   if (typeof response_text !== "string") {
     return new Response(
       JSON.stringify({ error: "Missing required field: response_text" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+  if (response_text.length > MAX_RESPONSE_CHARS) {
+    return new Response(
+      JSON.stringify({ error: `response_text exceeds ${MAX_RESPONSE_CHARS} characters` }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
@@ -41,12 +58,28 @@ export async function POST(request: Request) {
     );
   }
 
+  const normalizedComment = typeof comment === "string" ? comment.trim() : null;
+  if (normalizedComment && normalizedComment.length > MAX_COMMENT_CHARS) {
+    return new Response(
+      JSON.stringify({ error: `comment exceeds ${MAX_COMMENT_CHARS} characters` }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  const normalizedCitationIds = Array.isArray(citation_ids)
+    ? citation_ids
+        .filter((id): id is string => typeof id === "string")
+        .map((id) => id.trim())
+        .filter(Boolean)
+        .slice(0, MAX_CITATION_IDS)
+    : [];
+
   const entry = submitFeedback(
-    query,
-    response_text,
+    query.trim().slice(0, MAX_QUERY_CHARS),
+    response_text.trim().slice(0, MAX_RESPONSE_CHARS),
     signal,
-    typeof comment === "string" ? comment : null,
-    Array.isArray(citation_ids) ? citation_ids.filter((id): id is string => typeof id === "string") : []
+    normalizedComment,
+    normalizedCitationIds
   );
 
   return new Response(

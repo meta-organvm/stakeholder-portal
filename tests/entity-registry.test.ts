@@ -93,6 +93,32 @@ describe("EntityRegistry", () => {
     expect(result?.entity.id).toBe(entityA.id);
   });
 
+  it("split replaces an entity with new entities and preserves legacy alias routing", () => {
+    const original = createEntity("repo", "organvm-core", "Core package");
+    original.display_name = "ORGANVM Core";
+    registry.register(original);
+    registry.addAlias("core", original.id, "manual", 0.95);
+
+    const api = createEntity("repo", "organvm-core-api", "Core API");
+    const worker = createEntity("repo", "organvm-core-worker", "Core worker");
+    const success = registry.split(original.id, [api, worker], "Split monolith");
+
+    expect(success).toBe(true);
+    expect(registry.has(original.id)).toBe(false);
+    expect(registry.has(api.id)).toBe(true);
+    expect(registry.has(worker.id)).toBe(true);
+    expect(registry.count()).toBe(2);
+
+    const legacyLookup = registry.lookup("core");
+    expect(legacyLookup).not.toBeNull();
+    expect(legacyLookup?.entity.id).toBe(api.id);
+
+    const splitLog = registry.getSplitLog();
+    expect(splitLog).toHaveLength(1);
+    expect(splitLog[0].original_id).toBe(original.id);
+    expect(splitLog[0].new_ids).toEqual([api.id, worker.id]);
+  });
+
   it("flagForReview and resolveReview work", () => {
     const entity = createEntity("repo", "ambiguous", "Test");
     registry.register(entity);
@@ -112,7 +138,13 @@ describe("EntityRegistry", () => {
     expect(exported.entities).toHaveLength(2);
 
     const newRegistry = new EntityRegistry();
-    newRegistry.import({ entities: exported.entities, aliases: exported.aliases });
+    newRegistry.import({
+      entities: exported.entities,
+      aliases: exported.aliases,
+      mergeLog: exported.mergeLog,
+      splitLog: exported.splitLog,
+      reviewQueue: exported.reviewQueue,
+    });
     expect(newRegistry.count()).toBe(2);
   });
 });

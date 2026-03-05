@@ -36,7 +36,7 @@ export function FeedbackActions({
     setSubmitting(true);
 
     try {
-      await fetch("/api/feedback", {
+      const response = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -46,6 +46,7 @@ export function FeedbackActions({
           citation_ids: citationIds,
         }),
       });
+      if (!response.ok) return;
       setSubmitted(signal);
       onFeedbackSubmitted?.(signal);
     } catch {

@@ -101,6 +101,38 @@ describe("ingestion pipeline", () => {
     const graph = getKnowledgeGraph();
     expect(graph.edgeCount()).toBe(1);
   });
+
+  it("quarantines records with invalid relationship type", () => {
+    const records = [
+      makeRecord({
+        dedup_key: "test:bad-rel-type",
+        relationships: [
+          { type: "invented_relation", target_hint: "repo:other-repo" },
+        ],
+      }),
+    ];
+
+    const result = ingestRecords(records);
+    expect(result.ingested).toBe(0);
+    expect(result.quarantined).toBe(1);
+    expect(result.errors.some((e) => e.field === "relationships[0].type")).toBe(true);
+  });
+
+  it("quarantines records with out-of-range relationship strength", () => {
+    const records = [
+      makeRecord({
+        dedup_key: "test:bad-rel-strength",
+        relationships: [
+          { type: "depends_on", target_hint: "repo:other-repo", strength: 1.5 },
+        ],
+      }),
+    ];
+
+    const result = ingestRecords(records);
+    expect(result.ingested).toBe(0);
+    expect(result.quarantined).toBe(1);
+    expect(result.errors.some((e) => e.field === "relationships[0].strength")).toBe(true);
+  });
 });
 
 describe("computeProvenanceScore", () => {

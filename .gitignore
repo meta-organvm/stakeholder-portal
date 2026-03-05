@@ -6,3 +6,7 @@ out/
 *.tsbuildinfo
 coverage/
 .vercel
+
+# Ensure core source modules aren't shadow-ignored by global patterns like `lib/`.
+!src/lib/
+!src/lib/**
