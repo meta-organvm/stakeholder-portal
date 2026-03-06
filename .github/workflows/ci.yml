@@ -40,13 +40,6 @@ jobs:
 
       - name: Eval Quality Gate
         run: npm run ci:quality-gate
-        env:
-          ALERT_MIN_CITATION_COVERAGE: ${{ vars.ALERT_MIN_CITATION_COVERAGE || '0.75' }}
-          ALERT_MAX_HALLUCINATION_RATE: ${{ vars.ALERT_MAX_HALLUCINATION_RATE || '0.10' }}
-          ALERT_MAX_EVAL_P95_MS: ${{ vars.ALERT_MAX_EVAL_P95_MS || '6000' }}
-          ALERT_MAX_AUDIT_DENIED_RATIO: ${{ vars.ALERT_MAX_AUDIT_DENIED_RATIO || '0.20' }}
-          ALERT_MAX_INGEST_QUARANTINE_RATE: ${{ vars.ALERT_MAX_INGEST_QUARANTINE_RATE || '0.15' }}
-          ALERT_MAX_INGEST_DEAD_LETTERS: ${{ vars.ALERT_MAX_INGEST_DEAD_LETTERS || '20' }}
 
       - name: Build
         run: npm run build
