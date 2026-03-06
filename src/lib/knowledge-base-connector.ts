@@ -52,11 +52,12 @@ export async function fetchFederatedKnowledge(query: string, maxResults = 3): Pr
       source_type: "knowledge_base",
       retrieved_at: new Date().toISOString(),
     }));
-  } catch (error: any) {
-    if (error.name === "AbortError") {
+  } catch (error: unknown) {
+    const err = error as Error;
+    if (err.name === "AbortError") {
       console.warn(`[KnowledgeConnector] API request timed out after 2000ms`);
     } else {
-      console.warn(`[KnowledgeConnector] Fallback - failed to reach my-knowledge-base API: ${error.message}`);
+      console.warn(`[KnowledgeConnector] Fallback - failed to reach my-knowledge-base API: ${err.message}`);
     }
     return [];
   } finally {

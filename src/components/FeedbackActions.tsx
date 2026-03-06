@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
 type FeedbackSignal = "correct" | "missing" | "irrelevant" | "unsafe";
 
@@ -77,21 +77,25 @@ export function FeedbackActions({
   }
 
   return (
-    <div className="mt-2 flex items-center gap-1">
-      <span className="text-xs text-[var(--color-text-muted)] mr-1">
-        Was this helpful?
+    <div className="mt-4 flex items-center gap-2 border-t border-[var(--color-border)] pt-3 select-none">
+      <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--color-text-dim)] mr-1">
+        Validation Signal:
       </span>
-      {FEEDBACK_OPTIONS.map((opt) => (
-        <button
-          key={opt.signal}
-          onClick={() => handleFeedback(opt.signal)}
-          disabled={submitting}
-          title={opt.label}
-          className="rounded border border-[var(--color-border)] px-2 py-0.5 text-xs text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] disabled:opacity-50"
-        >
-          {opt.icon} {opt.label}
-        </button>
-      ))}
+      <div className="flex items-center gap-1.5">
+        {FEEDBACK_OPTIONS.map((opt) => (
+          <button
+            key={opt.signal}
+            id={`feedback-${opt.signal}`}
+            onClick={() => handleFeedback(opt.signal)}
+            disabled={submitting}
+            title={opt.label}
+            className="rounded-md border border-[var(--color-border)] bg-[rgba(255,255,255,0.03)] px-2.5 py-1 text-[10px] font-medium text-[var(--color-text-muted)] transition-all hover:border-[var(--color-accent-bright)] hover:text-[var(--color-text)] hover:bg-[rgba(255,255,255,0.08)] disabled:opacity-50 flex items-center gap-1.5"
+          >
+            <span className="text-[var(--color-accent-bright)] opacity-70">{opt.icon}</span>
+            {opt.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

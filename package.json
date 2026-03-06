@@ -13,24 +13,27 @@
     "eval:offline": "tsx scripts/run-evals.ts",
     "maintenance:run": "tsx scripts/run-maintenance.ts",
     "validate-manifest": "tsx scripts/validate-manifest.ts",
-    "generate": "python3 scripts/generate-manifest.py",
-    "prebuild": "npm run generate -- --allow-stale-manifest && npm run validate-manifest",
+    "generate": "tsx src/lib/ingestion/ingest-worker.ts",
+    "prebuild": "npm run generate -- --allow-stale-manifest --skip-vector && npm run validate-manifest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "ci:quality-gate": "tsx scripts/ci-quality-gate.ts",
-    "escalation:seed": "tsx -e \"import('@/lib/alert-audit').then(m => m.seedEscalationPolicies()).then(() => console.log('Policies seeded.'))\"",
-    "ingest:corpus": "tsx scripts/ingest-corpus.ts"
+    "escalation:seed": "tsx -e \"import('@/lib/alert-audit').then(m => m.seedEscalationPolicies()).then(() => console.log('Policies seeded.'))\""
   },
   "dependencies": {
+    "@langchain/core": "1.1.31",
+    "@langchain/textsplitters": "1.0.1",
     "drizzle-orm": "0.45.1",
+    "langchain": "1.2.30",
     "next": "^15.3.0",
     "next-auth": "5.0.0-beta.30",
     "pg": "8.20.0",
     "pgvector": "0.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-markdown": "^9.0.0"
+    "react-markdown": "^9.0.0",
+    "yaml": "2.8.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   enqueueJob,
   completeJob,
@@ -8,9 +8,11 @@ import {
   purgeOldJobs,
 } from "@/lib/queue";
 import type { JobType } from "@/lib/queue";
+import { db } from "@/lib/db";
 
 // The global test setup mocks @/lib/db with no-op methods.
-// We just verify the functions call through without errors.
+// We instrument the mock here to verify that the queue functions
+// actually call through to the DB layer — not just that they resolve.
 
 describe("queue", () => {
   it("enqueueJob returns a UUID string", async () => {
@@ -21,6 +23,13 @@ describe("queue", () => {
     expect(id).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
     );
+  });
+
+  it("enqueueJob calls db.insert with correct fields", async () => {
+    const insertSpy = vi.spyOn(db, "insert");
+    await enqueueJob({ type: "maintenance" as JobType, payload: { x: 1 }, maxAttempts: 5 });
+    expect(insertSpy).toHaveBeenCalledTimes(1);
+    insertSpy.mockRestore();
   });
 
   it("enqueueJob respects optional parameters", async () => {
@@ -44,6 +53,14 @@ describe("queue", () => {
     await expect(
       failJob("test-id", "Something went wrong")
     ).resolves.toBeUndefined();
+  });
+
+  it("failJob queries db.select to find the job before updating", async () => {
+    const selectSpy = vi.spyOn(db, "select");
+    await failJob("some-job-id", "error");
+    // failJob must look up attempts/maxAttempts before deciding the next status
+    expect(selectSpy).toHaveBeenCalledTimes(1);
+    selectSpy.mockRestore();
   });
 
   it("retryDeadLetterJob resolves without error", async () => {

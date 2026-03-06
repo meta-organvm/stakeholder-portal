@@ -73,6 +73,8 @@ vi.mock("@/lib/observability", () => ({
   recordTiming: vi.fn(),
 }));
 
+import { incrementCounter } from "@/lib/observability";
+
 vi.mock("@/lib/knowledge-base-connector", () => ({
   fetchFederatedKnowledge: vi.fn().mockResolvedValue([]),
 }));
@@ -136,18 +138,32 @@ describe("hybridRetrieve", () => {
   });
 
   it("uses cached results on repeated queries", async () => {
-    const first = await hybridRetrieve("alpha");
-    const second = await hybridRetrieve("alpha");
-    expect(first.strategy).toEqual(second.strategy);
-    expect(first.sources.length).toEqual(second.sources.length);
+    vi.mocked(incrementCounter).mockClear();
+    await hybridRetrieve("alpha");
+    // Cache miss on first call
+    const hitsAfterFirst = vi.mocked(incrementCounter).mock.calls.filter(
+      ([name]) => typeof name === "string" && name.includes("cache_hit")
+    ).length;
+    expect(hitsAfterFirst).toBe(0);
+
+    await hybridRetrieve("alpha");
+    // Cache hit on second call for same query
+    const hitsAfterSecond = vi.mocked(incrementCounter).mock.calls.filter(
+      ([name]) => typeof name === "string" && name.includes("cache_hit")
+    ).length;
+    expect(hitsAfterSecond).toBeGreaterThan(0);
   });
 
   it("bypasses cache when disableCache is true", async () => {
-    const first = await hybridRetrieve("alpha");
-    const second = await hybridRetrieve("alpha", { disableCache: true });
-    // Both should return valid results
-    expect(first.sources).toBeDefined();
-    expect(second.sources).toBeDefined();
+    vi.mocked(incrementCounter).mockClear();
+    await hybridRetrieve("alpha"); // warm the cache
+    vi.mocked(incrementCounter).mockClear();
+    await hybridRetrieve("alpha", { disableCache: true });
+    // A cache bypass should NOT increment a cache_hit counter
+    const cacheHits = vi.mocked(incrementCounter).mock.calls.filter(
+      ([name]) => typeof name === "string" && name.includes("cache_hit")
+    ).length;
+    expect(cacheHits).toBe(0);
   });
 
   it("respects maxSources option", async () => {
@@ -170,6 +186,15 @@ describe("hybridRetrieve", () => {
     expect(result.strategy).not.toContain("graph");
   });
 
+  it("default behavior (no includeGraph option) includes graph\u2014graph is opt-in enabled by default", async () => {
+    // Source: `options?.includeGraph ?? true` — graph is ON by default
+    const withDefault  = await hybridRetrieve("alpha");
+    const withExplicit = await hybridRetrieve("alpha", { disableCache: true, includeGraph: true });
+    expect(withDefault.strategy.includes("graph")).toBe(
+      withExplicit.strategy.includes("graph")
+    );
+  });
+
   it("assembles context with evidence-grounded sources heading", async () => {
     const result = await hybridRetrieve("alpha core engine");
     if (result.sources.length > 0) {
@@ -180,7 +205,7 @@ describe("hybridRetrieve", () => {
 
 describe("resetHybridRetrievalCache", () => {
   it("clears the cache so next call fetches fresh results", async () => {
-    const _first = await hybridRetrieve("alpha");
+    await hybridRetrieve("alpha");
     resetHybridRetrievalCache();
     // After reset, the next call should be a cache miss (still valid)
     const second = await hybridRetrieve("alpha");

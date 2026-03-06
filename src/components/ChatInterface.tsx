@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { parseSseChunk } from "@/lib/sse";
 import { EvidencePanel } from "./EvidencePanel";
 import type { EvidenceCitation } from "./EvidencePanel";
 import { FeedbackActions } from "./FeedbackActions";
+import manifest from "@/data/manifest.json";
 
 interface MessageMeta {
   citations?: EvidenceCitation[];
@@ -192,6 +193,10 @@ export function ChatInterface() {
     inputRef.current?.focus();
   }
 
+  const syncDate = manifest.generated
+    ? new Date(manifest.generated).toLocaleString()
+    : "Live State";
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     sendMessage(input);
@@ -199,8 +204,15 @@ export function ChatInterface() {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col">
+      {/* Last Synced Indicator */}
+      <div className="flex items-center gap-2 px-1 py-2 text-[10px] text-[var(--color-text-dim)] mb-2 border-b border-[var(--color-border)] select-none">
+        <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-fresh)] animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.4)]" />
+        <span className="font-medium tracking-wide uppercase">System Synced:</span>
+        <span className="font-mono text-[var(--color-text-muted)]">{syncDate}</span>
+      </div>
+
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-4 pb-4">
+      <div className="flex-1 overflow-y-auto space-y-4 pb-4 scroll-smooth">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <h2 className="text-2xl font-bold mb-2">Ask anything about ORGANVM</h2>
@@ -213,7 +225,7 @@ export function ChatInterface() {
                 <button
                   key={s}
                   onClick={() => sendMessage(s)}
-                  className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2 text-sm transition-colors hover:bg-[var(--color-surface-2)]"
+                  className="glass-panel rounded-full px-5 py-2.5 text-sm text-[var(--color-text-muted)] hover:text-white transition-all hover:scale-105 active:scale-95"
                 >
                   {s}
                 </button>
@@ -228,10 +240,10 @@ export function ChatInterface() {
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[80%] rounded-lg px-4 py-3 text-sm ${
+              className={`max-w-[88%] rounded-lg px-6 py-5 assistant-message-border ${
                 msg.role === "user"
-                  ? "bg-[var(--color-accent)] text-white"
-                  : "bg-[var(--color-surface)] border border-[var(--color-border)]"
+                  ? "user-message-gradient text-white !max-w-[68%]"
+                  : "bg-[var(--color-surface)] border border-[var(--color-border)] assistant-bubble-shadow"
               }`}
             >
               {msg.role === "assistant" ? (
@@ -309,23 +321,25 @@ export function ChatInterface() {
       {/* Input */}
       <form
         onSubmit={handleSubmit}
-        className="flex gap-3 border-t border-[var(--color-border)] pt-4"
+        className="flex gap-3 chat-input-container items-center"
       >
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask about ORGANVM..."
-          disabled={isStreaming}
-          className="flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-accent)] focus:outline-none disabled:opacity-50"
-        />
+        <div className="relative flex-1">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask ORGANVM..."
+            disabled={isStreaming}
+            className="w-full chat-input focus:outline-none disabled:opacity-50"
+          />
+        </div>
         <button
           type="submit"
           disabled={isStreaming || !input.trim()}
-          className="rounded-lg bg-[var(--color-accent)] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+          className="send-button text-sm font-semibold text-white transition-all hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:hover:scale-100 disabled:shadow-none"
         >
-          {isStreaming ? "..." : "Send"}
+          {isStreaming ? "Thinking..." : "Send"}
         </button>
       </form>
     </div>

@@ -1,28 +1,271 @@
 @import "tailwindcss";
 
-:root {
-  --color-bg: #0a0a0a;
-  --color-surface: #141414;
-  --color-surface-2: #1e1e1e;
-  --color-border: #2a2a2a;
-  --color-text: #e5e5e5;
-  --color-text-muted: #999999;
-  --color-accent: #3b82f6;
-  --color-accent-dim: #1e3a5f;
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 }
 
-body {
+:root {
+  /* ═══════════════════════════════════════════════
+     ORGANVM DESIGN SYSTEM — PREMIUM GLASSMORPHIC
+     ═══════════════════════════════════════════════ */
+
+  /* Palette */
+  --color-bg: #080c12;
+  --color-surface: #0e1420;
+  --color-surface-2: #131b28;
+  --color-surface-3: #1a2436;
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-focus: rgba(99, 161, 255, 0.5);
+
+  /* Text */
+  --color-text: #e2e8f1;
+  --color-text-secondary: rgba(226, 232, 241, 0.62);
+  --color-text-muted: rgba(226, 232, 241, 0.38);
+  --color-text-dim: rgba(226, 232, 241, 0.22);
+
+  /* Accents */
+  --color-accent: #3b82f6;
+  --color-accent-dim: rgba(59, 130, 246, 0.18);
+  --color-accent-bright: #60a5fa;
+  --user-from: #2563eb;
+  --user-to: #4338ca;
+
+  /* Semantic */
+  --color-fresh: #34d399;
+  --color-fresh-dim: rgba(52, 211, 153, 0.15);
+  --color-warn: #f59e0b;
+  --color-error: #f87171;
+
+  /* Radii */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+  --r-pill: 999px;
+
+  /* Spacing */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.12);
+
+  /* Legacy/Utility compatibility */
+  --backdrop-blur: blur(16px);
+}
+
+html, body {
   background: var(--color-bg);
   color: var(--color-text);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
-/* Organ palette colors */
-.organ-i { --organ-color: #6366f1; }
-.organ-ii { --organ-color: #ec4899; }
-.organ-iii { --organ-color: #3b82f6; }
-.organ-iv { --organ-color: #f59e0b; }
-.organ-v { --organ-color: #10b981; }
-.organ-vi { --organ-color: #8b5cf6; }
-.organ-vii { --organ-color: #ef4444; }
-.organ-meta { --organ-color: #64748b; }
+/* ─── Global Overrides ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.18); }
+
+/* ─── Nav ─── */
+nav {
+  background: rgba(8, 12, 18, 0.9);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-border) !important;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+nav > div {
+  max-width: 900px !important;
+  margin-inline: auto;
+  padding: var(--sp-4) var(--sp-6) !important;
+}
+
+.logo-text, nav a[href="/"], nav .text-lg {
+  font-size: 1.0625rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  background: linear-gradient(135deg, #fff 30%, var(--color-accent-bright));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+nav .flex.gap-6 { gap: var(--sp-5) !important; }
+nav .flex.gap-6 a {
+  font-size: 0.8125rem !important;
+  font-weight: 500;
+  color: var(--color-text-muted) !important;
+  transition: color 0.18s;
+}
+nav .flex.gap-6 a:hover { color: var(--color-text) !important; }
+
+/* ─── Main Layout ─── */
+main {
+  max-width: 900px !important;
+  margin-inline: auto;
+  padding: var(--sp-6) var(--sp-6) var(--sp-4) !important;
+}
+
+/* ─── Chat bubbles & layout (Targeting existing Tailwind classes) ─── */
+.flex-1.overflow-y-auto.space-y-4 {
+  gap: var(--sp-5) !important;
+  padding-right: var(--sp-1);
+}
+
+/* User Message */
+.flex.justify-end > div {
+  max-width: 75% !important;
+  background: linear-gradient(135deg, var(--user-from), var(--user-to)) !important;
+  color: #fff !important;
+  border-radius: var(--r-xl) var(--r-xl) var(--r-sm) var(--r-xl) !important;
+  padding: var(--sp-3) var(--sp-5) !important;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.35), var(--shadow-card);
+  border: none !important;
+  font-size: 0.8125rem !important;
+}
+
+/* Assistant Message */
+.flex.justify-start > div {
+  max-width: 90% !important;
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--r-sm) var(--r-xl) var(--r-xl) var(--r-xl) !important;
+  padding: var(--sp-5) var(--sp-6) !important;
+  box-shadow: var(--shadow-card);
+}
+
+/* Prose refinements */
+.prose {
+  color: var(--color-text) !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.75 !important;
+}
+
+.prose p { margin-block: 0.65em !important; }
+.prose strong { color: #fff; font-weight: 600; }
+.prose em { color: var(--color-text-secondary); }
+
+.prose h3 {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  margin: 1.25em 0 0.4em !important;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.prose table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 0.6875rem !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  margin-block: var(--sp-4) !important;
+}
+
+.prose thead { background: var(--color-surface-3); }
+.prose th {
+  padding: var(--sp-2) var(--sp-3) !important;
+  text-align: left;
+  color: var(--color-text-muted) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.prose td {
+  padding: var(--sp-2) var(--sp-3) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--color-text-secondary);
+}
+
+/* Code */
+.prose code {
+  font-family: var(--font-mono) !important;
+  font-size: 0.82em !important;
+  background: var(--color-surface-3) !important;
+  color: var(--color-accent-bright) !important;
+  padding: 0.1em 0.38em !important;
+  border-radius: var(--r-sm) !important;
+  border: 1px solid var(--color-border);
+}
+
+/* ─── Evidence Panel / Sources ─── */
+.evidence-panel-root {
+  margin-top: var(--sp-5) !important;
+  background: var(--color-surface-2) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--r-lg) !important;
+  overflow: hidden;
+  padding: 0 !important;
+}
+
+.source-card {
+  background: var(--color-surface-3) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--r-md) !important;
+  padding: var(--sp-2) var(--sp-3) !important;
+  transition: border-color 0.15s;
+}
+
+.cite-pill {
+  font-family: var(--font-mono) !important;
+  font-size: 0.68rem !important;
+  color: var(--color-accent-bright) !important;
+  background: var(--color-accent-dim);
+  padding: 1px 6px !important;
+  border-radius: var(--r-pill) !important;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+/* ─── Form ─── */
+.chat-input-container {
+  padding: var(--sp-4) 0 0 !important;
+  border-top: 1px solid var(--color-border) !important;
+  margin-top: var(--sp-2) !important;
+}
+
+.chat-input {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--r-xl) !important;
+  padding: var(--sp-3) var(--sp-5) !important;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  color: var(--color-text) !important;
+}
+
+.chat-input:focus {
+  border-color: var(--color-border-focus) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08) !important;
+}
+
+.send-button {
+  background: linear-gradient(135deg, #2563eb, #4338ca) !important;
+  border-radius: var(--r-xl) !important;
+  padding: var(--sp-3) var(--sp-6) !important;
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.4);
+}
+
+/* Organ colors */
+.organ-i { --organ-color: #818cf8; }
+.organ-ii { --organ-color: #f472b6; }
+.organ-iii { --organ-color: #60a5fa; }
+.organ-iv { --organ-color: #fbbf24; }
+.organ-v { --organ-color: #34d399; }
+.organ-vi { --organ-color: #a78bfa; }
+.organ-vii { --organ-color: #f87171; }
+.organ-meta { --organ-color: #94a3b8; }
+
