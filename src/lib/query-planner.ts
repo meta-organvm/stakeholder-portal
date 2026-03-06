@@ -20,6 +20,7 @@ export type QueryStrategy =
   | "system_wide"      // system-level metrics/overview
   | "graph_traversal"  // needs knowledge graph
   | "live_research"    // needs real-time external/tool info
+  | "analytics"        // statistical or text analytics over corpus
   | "exploratory";     // open-ended, needs broad retrieval
 
 export interface QueryPlan {
@@ -54,6 +55,12 @@ interface QueryPattern {
 }
 
 const PATTERNS: QueryPattern[] = [
+  // Analytics
+  {
+    pattern: /(?:most (?:used|common) words?|word frequency|common phrases?)/i,
+    strategy: "analytics",
+  },
+
   // System-level deterministic
   {
     pattern: /^what is organvm\??$/i,

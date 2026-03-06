@@ -11,6 +11,11 @@ import { getKnowledgeGraph } from "./graph";
 import { getEntityRegistry } from "./entity-registry";
 import { buildTier1Context } from "./retrieval";
 import { incrementCounter, recordTiming } from "./observability";
+import { db } from "./db";
+import { documentChunks } from "./db/schema";
+import { cosineDistance } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
+import { fetchFederatedKnowledge } from "./knowledge-base-connector";
 
 // ---------------------------------------------------------------------------
 // Retrieval result
@@ -129,10 +134,10 @@ export function resetHybridRetrievalCache(): void {
 // Hybrid retrieval
 // ---------------------------------------------------------------------------
 
-export function hybridRetrieve(
+export async function hybridRetrieve(
   query: string,
   options: HybridRetrieveOptions = {}
-): HybridRetrievalResult {
+): Promise<HybridRetrievalResult> {
   const startedMs = Date.now();
   const rewrittenQuery = rewriteQuery(query);
   const cacheKey = makeCacheKey(rewrittenQuery, options);
@@ -254,6 +259,73 @@ export function hybridRetrieve(
       }
     }
   }
+
+  // -------------------------------------------------------------------------
+  // Strategy 4: Semantic search (PgVector)
+  // -------------------------------------------------------------------------
+  try {
+    const EMBEDDING_API_URL = process.env.EMBEDDING_API_URL || "https://api.openai.com/v1/embeddings";
+    const EMBEDDING_API_KEY = process.env.EMBEDDING_API_KEY;
+    const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || "text-embedding-3-small";
+
+    const embedRes = await fetch(EMBEDDING_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(EMBEDDING_API_KEY ? { Authorization: `Bearer ${EMBEDDING_API_KEY}` } : {}),
+      },
+      body: JSON.stringify({ input: rewrittenQuery, model: EMBEDDING_MODEL }),
+      signal: AbortSignal.timeout(3000), // 3s timeout so it degrades gracefully
+    });
+
+    if (embedRes.ok) {
+      const data = await embedRes.json();
+      const embedding = data.data?.[0]?.embedding;
+
+      if (embedding) {
+        strategies.push("semantic");
+        const similarity = sql<number>`1 - (${cosineDistance(documentChunks.embedding, embedding)})`;
+        const similarChunks = await db
+          .select({
+            id: documentChunks.id,
+            repo: documentChunks.repo,
+            organ: documentChunks.organ,
+            path: documentChunks.path,
+            content: documentChunks.content,
+            similarity,
+          })
+          .from(documentChunks)
+          .where(sql`${similarity} > 0.6`)
+          .orderBy((t) => desc(t.similarity))
+          .limit(5);
+
+        for (const chunk of similarChunks) {
+          sources.push({
+            id: chunk.id,
+            type: "repo",
+            name: `${chunk.repo}/${chunk.path}`,
+            display_name: `${chunk.repo}/${chunk.path}`,
+            relevance: chunk.similarity,
+            freshness: 0.9,
+            confidence: Math.min(1, chunk.similarity * 0.9),
+            snippet: chunk.content,
+            url: `/repos/${chunk.repo}/tree/main/${chunk.path}`,
+            source_type: "corpus",
+            retrieved_at: new Date().toISOString(),
+          });
+        }
+      }
+    }
+  } catch (error) {
+    console.warn("Semantic vector retrieval failed or skipped:", error);
+  }
+
+  // -------------------------------------------------------------------------
+  // Strategy 5: Personal Knowledge Federation
+  // -------------------------------------------------------------------------
+  strategies.push("federated");
+  const federatedSources = await fetchFederatedKnowledge(rewrittenQuery);
+  sources.push(...federatedSources);
 
   // Sort all sources by combined relevance
   sources.sort((a, b) => b.relevance - a.relevance);

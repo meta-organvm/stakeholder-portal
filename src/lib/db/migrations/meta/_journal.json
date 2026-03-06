@@ -8,6 +8,20 @@
       "when": 1772735633169,
       "tag": "0000_solid_gertrude_yorkes",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772755070373,
+      "tag": "0001_equal_bloodstorm",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772755492501,
+      "tag": "0002_flat_tarot",
+      "breakpoints": true
     }
   ]
 }

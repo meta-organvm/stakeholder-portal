@@ -9,6 +9,8 @@ import { incrementCounter, recordTiming, withTimingAsync } from "@/lib/observabi
 import type { Repo } from "@/lib/types";
 import type { Citation } from "@/lib/citations";
 import type { QueryPlan } from "@/lib/query-planner";
+import { db } from "@/lib/db";
+import { sql } from "drizzle-orm";
 
 // Simple in-memory rate limiter: 10 req/min per IP
 type RateLimitEntry = {
@@ -735,8 +737,48 @@ export async function POST(request: Request) {
     });
   }
 
+  // --------------------------------------------------------------------------
+  // Phase 3: Analytics Queries (Word/Phrase Frequencies via Postgres)
+  // --------------------------------------------------------------------------
+  if (queryPlan.strategy === "analytics") {
+    trackChatPath("analytics", requestStartedAtMs);
+    try {
+      const results = await db.execute(
+        sql`SELECT word, ndoc, nentry FROM ts_stat('SELECT search_vector FROM document_chunks') ORDER BY nentry DESC LIMIT 15`
+      );
+
+      const rows = Array.isArray(results.rows)
+        ? (results.rows as Record<string, unknown>[])
+        : (results as unknown as Record<string, unknown>[]);
+
+      const wordsMarkdown = rows
+        .map((row) => `- **${String(row.word)}**: ${Number(row.nentry)} occurrences (in ${Number(row.ndoc)} docs)`)
+        .join("\n");
+
+      // We bypass the LLM and return the raw aggregations instantly
+      const answer = `### Corpus Analytical Aggregations\n\nI ran a high-speed system-wide statistical aggregation over the ingested textual chunks across the active corpus. Here are the most frequent words/phrases:\n\n${wordsMarkdown}\n\n*(Note: This is deterministic corpus analysis querying directly against the vector/text index, bypassing the contextual limit).*`;
+
+      const snapshotCitation = buildManifestSnapshotCitation();
+
+      return createSseResponse(answer, [snapshotCitation], {
+        confidence: 0.95,
+        coverage: 1.0,
+        strategy: "analytics",
+        suggestions: ["Narrow frequency by repo", "Extract specific phrases instead"],
+        answerability: "answerable",
+        answerability_reason: "Executed direct database statistical aggregation",
+        diagnostics: buildDiagnostics(queryPlan, "hybrid_retrieval", {
+          provider: { name: "none", status: "success" },
+        }),
+      });
+    } catch (e) {
+      console.error("Failed to execute analytics strategy:", e);
+      // Fall through to hybrid search if analytics query dynamically fails
+    }
+  }
+
   // Hybrid retrieval with citations
-  const retrieval = hybridRetrieve(sanitizedQuery, {
+  const retrieval = await hybridRetrieve(sanitizedQuery, {
     maxSources: queryPlan.strategy === "single_repo" ? 5 : 15,
     includeGraph: queryPlan.strategy === "graph_traversal" || queryPlan.strategy === "cross_organ",
   });

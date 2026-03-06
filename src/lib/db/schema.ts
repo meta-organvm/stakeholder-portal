@@ -6,7 +6,11 @@ import {
   integer,
   boolean,
   pgEnum,
+  index,
+  vector,
+  customType,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // ─────────────────────────────────────────────
 // Distributed lock registry
@@ -123,4 +127,33 @@ export const connectorCursors = pgTable("connector_cursors", {
   totalSynced: integer("total_synced").notNull().default(0),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// ─────────────────────────────────────────────
+// Document Embeddings (Phase 2 Vector Store)
+// ─────────────────────────────────────────────
+
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
+
+export const documentChunks = pgTable(
+  "document_chunks",
+  {
+    id: text("id").primaryKey(),
+    repo: text("repo").notNull(),
+    organ: text("organ").notNull(),
+    path: text("path").notNull(),
+    content: text("content").notNull(),
+    embedding: vector("embedding", { dimensions: 1536 }),
+    searchVector: tsvector("search_vector").generatedAlwaysAs(sql`to_tsvector('english', content)`),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    embeddingIndex: index("embedding_idx").using("hnsw", table.embedding.op("vector_cosine_ops")),
+    searchIndex: index("search_idx").using("gin", table.searchVector),
+    repoPathIndex: index("chunk_repo_path_idx").on(table.repo, table.path),
+  })
+);
 

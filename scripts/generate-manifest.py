@@ -297,6 +297,52 @@ def read_organ_aesthetic(organ_dir: Path) -> dict[str, str]:
 
 
 # ---------------------------------------------------------------------------
+# File Index builder
+# ---------------------------------------------------------------------------
+
+def get_file_index(repo_path: Path) -> list[str]:
+    """Get a lightweight file index for the AI highlighting key paths."""
+    if not (repo_path / ".git").exists() and not (repo_path / ".git").is_file():
+        return []
+
+    try:
+        result = subprocess.run(
+            ["git", "ls-files"],
+            cwd=str(repo_path),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode != 0:
+            return []
+
+        all_files = result.stdout.splitlines()
+
+        high_value = set()
+        for f in all_files:
+            # Root level markdown or key metadata
+            if "/" not in f and (f.endswith(".md") or f in ("package.json", "Cargo.toml", "seed.yaml")):
+                high_value.add(f)
+            # Markdown everywhere
+            elif f.endswith(".md"):
+                high_value.add(f)
+            # Conductor, archetypes, and similar high value logic
+            elif f.startswith("conductor/") or f.startswith("archetypes/") or f.startswith("src/core/"):
+                high_value.add(f)
+            # Scripts
+            elif f.startswith("scripts/") and f.endswith((".py", ".ts", ".sh")):
+                high_value.add(f)
+            # Add top-level directory hints
+            if "/" in f:
+                root_dir = f.split("/")[0] + "/"
+                high_value.add(root_dir)
+
+        return sorted(high_value)[:500]
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return []
+
+
+# ---------------------------------------------------------------------------
 # AI context builder
 # ---------------------------------------------------------------------------
 
@@ -466,9 +512,9 @@ def generate_manifest(output_path: Path, allow_stale_manifest: bool = False) -> 
             sections: dict[str, str] = {}
             for key in ("what this is", "architecture", "features", "build & dev commands",
                          "conventions", "environment", "key design constraints",
-                         "remaining limitations"):
+                         "remaining limitations", "key files", "data integrity rules", "schemas"):
                 if key in all_sections:
-                    sections[key] = all_sections[key][:1500]
+                    sections[key] = all_sections[key][:2500]
 
             # Dependencies
             deps = repo_entry.get("dependencies", [])
@@ -506,6 +552,9 @@ def generate_manifest(output_path: Path, allow_stale_manifest: bool = False) -> 
             # Git stats
             gs = git_stats(repo_path) if repo_path else {}
 
+            # File index
+            file_index = get_file_index(repo_path) if repo_path else []
+
             # AI context
             ai_context = build_ai_context(
                 name, description, tech_stack, all_sections, deployment_urls, organ_key
@@ -529,6 +578,7 @@ def generate_manifest(output_path: Path, allow_stale_manifest: bool = False) -> 
                 "deployment_urls": deployment_urls,
                 "github_url": f"https://github.com/{org}/{name}" if org else "",
                 "git_stats": gs,
+                "file_index": file_index,
                 "sections": sections,
                 "ai_context": ai_context,
                 "revenue_model": repo_entry.get("revenue_model"),

@@ -19,13 +19,15 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "ci:quality-gate": "tsx scripts/ci-quality-gate.ts",
-    "escalation:seed": "tsx -e \"import('@/lib/alert-audit').then(m => m.seedEscalationPolicies()).then(() => console.log('Policies seeded.'))\""
+    "escalation:seed": "tsx -e \"import('@/lib/alert-audit').then(m => m.seedEscalationPolicies()).then(() => console.log('Policies seeded.'))\"",
+    "ingest:corpus": "tsx scripts/ingest-corpus.ts"
   },
   "dependencies": {
     "drizzle-orm": "0.45.1",
     "next": "^15.3.0",
     "next-auth": "5.0.0-beta.30",
     "pg": "8.20.0",
+    "pgvector": "0.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^9.0.0"
