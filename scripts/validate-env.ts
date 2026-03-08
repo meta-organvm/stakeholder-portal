@@ -1,6 +1,4 @@
 import { loadEnvConfig } from "@next/env";
-import * as fs from "fs";
-import * as path from "path";
 
 loadEnvConfig(process.cwd());
 

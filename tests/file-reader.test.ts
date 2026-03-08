@@ -1,6 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import * as fs from "fs";
-import * as path from "path";
+import { describe, it, expect, vi } from "vitest";
 
 // Mock manifest
 vi.mock("@/lib/manifest", () => ({

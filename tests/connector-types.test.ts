@@ -13,7 +13,8 @@ function makeStubAdapter(id: string, name: string): ConnectorAdapter {
   return {
     id,
     name,
-    configure(_: ConnectorConfig) { /* no-op */ },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    configure(_config: ConnectorConfig) { /* no-op */ },
     async sync() { return [] as IngestRecord[]; },
     getState(): ConnectorState {
       return { status: "idle", last_run: null, records_ingested: 0, errors: 0, last_error: null };
