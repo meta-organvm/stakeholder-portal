@@ -147,6 +147,7 @@ export const documentChunks = pgTable(
     organ: text("organ").notNull(),
     path: text("path").notNull(),
     content: text("content").notNull(),
+    contentClass: text("content_class"), // 'vision' | 'research' | 'code' | 'config' | 'readme' | null
     embedding: vector("embedding", { dimensions: 384 }),
     searchVector: tsvector("search_vector").generatedAlwaysAs(sql`to_tsvector('english', content)`),
     fileMtime: timestamp("file_mtime", { withTimezone: true }),

@@ -1,6 +1,9 @@
 schema_version: "1.0"
-name: stakeholder-portal
 organ: META-ORGANVM
+organ_name: Meta
+repo: stakeholder-portal
+org: meta-organvm
+name: stakeholder-portal
 tier: standard
 implementation_status: ACTIVE
 promotion_status: LOCAL

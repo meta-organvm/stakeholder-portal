@@ -61,6 +61,7 @@ export interface EmbedChunksOptions {
   content: string;
   fileMtime?: Date;
   commitSha?: string;
+  contentClass?: string;
 }
 
 export interface EmbedChunksResult {
@@ -81,7 +82,7 @@ function isCodePath(filePath: string): boolean {
 }
 
 export async function embedChunks(opts: EmbedChunksOptions): Promise<EmbedChunksResult> {
-  const { repo, organ, filePath, content, fileMtime, commitSha } = opts;
+  const { repo, organ, filePath, content, fileMtime, commitSha, contentClass } = opts;
   let inserted = 0;
   let errors = 0;
 
@@ -118,6 +119,7 @@ export async function embedChunks(opts: EmbedChunksOptions): Promise<EmbedChunks
           organ,
           path: filePath,
           content: textChunk,
+          contentClass: contentClass ?? null,
           embedding,
           fileMtime: fileMtime ?? null,
           commitSha: commitSha ?? null,
@@ -127,6 +129,7 @@ export async function embedChunks(opts: EmbedChunksOptions): Promise<EmbedChunks
           target: documentChunks.id,
           set: {
             content: textChunk,
+            contentClass: contentClass ?? null,
             embedding,
             fileMtime: fileMtime ?? null,
             commitSha: commitSha ?? null,

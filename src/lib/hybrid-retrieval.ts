@@ -49,6 +49,8 @@ export interface HybridRetrieveOptions {
   maxSources?: number;
   includeGraph?: boolean;
   disableCache?: boolean;
+  boostVision?: boolean;
+  queryStrategy?: import("./query-planner").QueryStrategy;
 }
 
 // ---------------------------------------------------------------------------
@@ -153,6 +155,7 @@ export async function hybridRetrieve(
   incrementCounter("retrieval.cache_miss_total");
   const maxSources = options?.maxSources ?? 15;
   const includeGraph = options?.includeGraph ?? true;
+  const boostVision = options?.boostVision ?? false;
   const manifest = getManifest();
   const strategies: string[] = [];
 
@@ -395,6 +398,7 @@ export async function hybridRetrieve(
       if (embedding) {
         strategies.push("semantic");
         const similarity = sql<number>`1 - (${cosineDistance(documentChunks.embedding, embedding)})`;
+        const semanticLimit = boostVision ? 20 : 10;
         const similarChunks = await db
           .select({
             id: documentChunks.id,
@@ -402,13 +406,14 @@ export async function hybridRetrieve(
             organ: documentChunks.organ,
             path: documentChunks.path,
             content: documentChunks.content,
+            contentClass: documentChunks.contentClass,
             ingestedAt: documentChunks.ingestedAt,
             similarity,
           })
           .from(documentChunks)
-          .where(sql`${similarity} > 0.45`)
+          .where(sql`${similarity} > 0.40`)
           .orderBy((t) => desc(t.similarity))
-          .limit(10);
+          .limit(semanticLimit);
 
         for (const chunk of similarChunks) {
           // Freshness boost: recently ingested chunks get a relevance bump
@@ -416,7 +421,12 @@ export async function hybridRetrieve(
             ? (Date.now() - new Date(chunk.ingestedAt).getTime()) / 3_600_000
             : Infinity;
           const freshnessBoost = ageHours < 24 ? 0.1 : ageHours < 168 ? 0.05 : 0;
-          const boostedSimilarity = Math.min(1, chunk.similarity + freshnessBoost);
+          // Vision-class content gets a relevance boost for meta-vision queries
+          const visionBoost = boostVision && (chunk.contentClass === "vision" || chunk.contentClass === "research") ? 0.15 : 0;
+          // SOP-class content gets a boost for governance/process queries
+          const isSopQuery = /(?:how does .+ work|what(?:'s| is) the process|SOP|procedure|governance|promotion|state machine)/i.test(rewrittenQuery);
+          const sopBoost = isSopQuery && chunk.contentClass === "sop" ? 0.12 : 0;
+          const boostedSimilarity = Math.min(1, chunk.similarity + freshnessBoost + visionBoost + sopBoost);
 
           sources.push({
             id: chunk.id,
@@ -428,7 +438,7 @@ export async function hybridRetrieve(
             confidence: Math.min(1, boostedSimilarity * 0.9),
             snippet: chunk.content,
             url: `/repos/${chunk.repo}/tree/main/${chunk.path}`,
-            source_type: "corpus",
+            source_type: chunk.contentClass === "vision" || chunk.contentClass === "research" ? "research_corpus" : "corpus",
             retrieved_at: new Date().toISOString(),
           });
         }
@@ -442,7 +452,7 @@ export async function hybridRetrieve(
   // Strategy 5: Personal Knowledge Federation
   // -------------------------------------------------------------------------
   strategies.push("federated");
-  const federatedSources = await fetchFederatedKnowledge(rewrittenQuery);
+  const federatedSources = await fetchFederatedKnowledge(rewrittenQuery, options.queryStrategy);
   sources.push(...federatedSources);
 
   // -------------------------------------------------------------------------

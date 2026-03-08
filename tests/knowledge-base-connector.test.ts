@@ -113,7 +113,7 @@ describe("fetchFederatedKnowledge", () => {
     expect(result).toEqual([]);
   });
 
-  it("respects maxResults parameter", async () => {
+  it("uses strategy-aware params (meta_vision gets 8 results)", async () => {
     process.env.MY_KNOWLEDGE_BASE_ENABLED = "true";
     process.env.MY_KNOWLEDGE_BASE_API_URL = "https://kb.example.com";
 
@@ -125,9 +125,27 @@ describe("fetchFederatedKnowledge", () => {
     );
 
     const { fetchFederatedKnowledge } = await import("@/lib/knowledge-base-connector");
-    await fetchFederatedKnowledge("test", 5);
+    await fetchFederatedKnowledge("test", "meta_vision");
 
     const url = new URL(fetchMock.mock.calls[0][0] as string);
-    expect(url.searchParams.get("limit")).toBe("5");
+    expect(url.searchParams.get("limit")).toBe("8");
+  });
+
+  it("defaults to 3 results without strategy", async () => {
+    process.env.MY_KNOWLEDGE_BASE_ENABLED = "true";
+    process.env.MY_KNOWLEDGE_BASE_API_URL = "https://kb.example.com";
+
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ results: [] }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
+    );
+
+    const { fetchFederatedKnowledge } = await import("@/lib/knowledge-base-connector");
+    await fetchFederatedKnowledge("test");
+
+    const url = new URL(fetchMock.mock.calls[0][0] as string);
+    expect(url.searchParams.get("limit")).toBe("3");
   });
 });

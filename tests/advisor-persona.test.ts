@@ -151,8 +151,8 @@ describe("Advisor persona", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const fetchCall = fetchMock.mock.calls[0];
     const body = JSON.parse(fetchCall[1].body);
-    expect(body.temperature).toBe(0.2);
-    expect(body.max_tokens).toBe(1200);
+    expect(body.temperature).toBe(0.3);
+    expect(body.max_tokens).toBe(1800);
   });
 
   it("system prompt contains strategic counselor text for advisor mode", async () => {

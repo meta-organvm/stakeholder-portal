@@ -13,7 +13,8 @@ import { getManifest } from "./manifest";
 // ---------------------------------------------------------------------------
 
 export type QueryStrategy =
-  | "deterministic"     // direct answer from manifest, no LLM
+  | "deterministic"     // legacy — kept for type compat, now routes through LLM
+  | "meta_vision"      // questions about purpose, identity, vision, meaning
   | "single_repo"      // focused on one repo
   | "organ_scope"      // scoped to an organ
   | "cross_organ"      // spans multiple organs
@@ -56,32 +57,34 @@ interface QueryPattern {
 }
 
 const PATTERNS: QueryPattern[] = [
+  // Meta-vision: questions about purpose, identity, meaning, the creator's work
+  {
+    pattern: /(?:what is (?:this|organvm|the project|all this|this thing|this system)|what(?:'s| is) (?:the )?(?:point|purpose|vision|value|meaning|mission|philosophy)|why does (?:this|it|any of (?:this|that)) (?:matter|exist)|what did (?:he|she|they|you|your (?:friend|creator)) (?:make|build|create|do)|life(?:'s)? work|what(?:'s| is) the (?:big )?(?:deal|idea)|who (?:are you|made (?:this|you))|what(?:'s| is) (?:this|it) (?:all )?(?:about|for)|why should (?:i|we|anyone) care|sell me|convince me|elevator pitch|manifesto)/i,
+    strategy: "meta_vision",
+  },
+
   // Analytics
   {
     pattern: /(?:most (?:used|common) words?|word frequency|common phrases?)/i,
     strategy: "analytics",
   },
 
-  // System-level deterministic
-  {
-    pattern: /^what is organvm\??$/i,
-    strategy: "deterministic",
-  },
+  // System-level queries (formerly deterministic — now all go through LLM)
   {
     pattern: /(?:repo count|how many repos?).*(?:per|each|by) organ/i,
-    strategy: "deterministic",
+    strategy: "system_wide",
   },
   {
     pattern: /flagship repos?/i,
-    strategy: "deterministic",
+    strategy: "system_wide",
   },
   {
     pattern: /(?:last|recent|latest) sprint/i,
-    strategy: "deterministic",
+    strategy: "system_wide",
   },
   {
     pattern: /deployed (?:product|deployment)/i,
-    strategy: "deterministic",
+    strategy: "system_wide",
   },
 
   // Tech stack for specific repo
@@ -276,7 +279,10 @@ export function planQuery(query: string): QueryPlan {
   // Set max tokens based on strategy
   switch (plan.strategy) {
     case "deterministic":
-      plan.suggested_max_tokens = 500;
+      plan.suggested_max_tokens = 800;
+      break;
+    case "meta_vision":
+      plan.suggested_max_tokens = 1800;
       break;
     case "single_repo":
       plan.suggested_max_tokens = 800;
@@ -344,6 +350,7 @@ function estimateCost(plan: QueryPlan): number {
 
   switch (plan.strategy) {
     case "deterministic": cost = 1; break;
+    case "meta_vision": cost = 5; break;
     case "single_repo": cost = 2; break;
     case "file_access": cost = 3; break;
     case "organ_scope": cost = 4; break;

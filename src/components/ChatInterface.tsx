@@ -9,42 +9,81 @@ import { FeedbackActions } from "./FeedbackActions";
 import manifest from "@/data/manifest.json";
 
 type PersonaMode = "hermeneus" | "advisor";
+type AudienceLens = "creative" | "technical" | "business" | "curious" | "skeptical";
 
-const PERSONA_DISPLAY: Record<PersonaMode, {
-  heading: string;
-  subtitle: string;
-  placeholder: string;
-  starters: string[];
-}> = {
-  hermeneus: {
-    heading: "Ask anything about ORGANVM",
-    subtitle:
-      "Get answers about architecture, repos, dependencies, deployments, and the state of all 8 organs and 100+ repositories.",
-    placeholder: "Ask about repos, organs, architecture, deployments...",
-    starters: [
-      "How is ORGANVM structured?",
-      "What does organvm-engine do?",
-      "How do the organs depend on each other?",
-      "Which repos are most active right now?",
-      "What's deployed in production?",
-      "Tell me about the ingestion pipeline",
-    ],
+const LENS_OPTIONS: Array<{
+  id: AudienceLens;
+  label: string;
+  description: string;
+}> = [
+  {
+    id: "creative",
+    label: "Creative",
+    description: "I'm an artist, writer, or maker. Show me what this creates.",
   },
-  advisor: {
-    heading: "Your Strategic Advisor",
-    subtitle:
-      "An omniscient counselor drawing from history, systems theory, and institutional strategy to help you navigate decisions.",
-    placeholder: "Ask for strategic guidance, risk assessment, historical parallels...",
-    starters: [
-      "What's the biggest risk to ORGANVM right now?",
-      "Which organ needs the most attention?",
-      "Am I over-engineering anything?",
-      "What historical pattern does my system most resemble?",
-      "Where should I focus this week for maximum leverage?",
-      "What would break first under real external load?",
-    ],
+  {
+    id: "technical",
+    label: "Technical",
+    description: "I'm an engineer or developer. Show me how it's built.",
   },
+  {
+    id: "business",
+    label: "Business",
+    description: "I'm evaluating this professionally. Show me what it does and why it matters.",
+  },
+  {
+    id: "curious",
+    label: "Curious",
+    description: "I'm just exploring. Start from the beginning.",
+  },
+  {
+    id: "skeptical",
+    label: "Skeptical",
+    description: "I've heard the pitch. Convince me.",
+  },
+];
+
+const POST_LENS_STARTERS: Record<AudienceLens, string[]> = {
+  creative: [
+    "What does this system create?",
+    "Show me the art and performance work",
+    "How does automation serve human expression here?",
+    "What's the most surprising creative project?",
+  ],
+  technical: [
+    "Walk me through the architecture",
+    "How do the organs enforce dependency rules?",
+    "What's the promotion state machine?",
+    "Show me the governance engine",
+  ],
+  business: [
+    "What's the amplification thesis?",
+    "What's deployed in production right now?",
+    "How does one person operate at this scale?",
+    "What's the go-to-market strategy?",
+  ],
+  curious: [
+    "What is ORGANVM and why does it exist?",
+    "Walk me through the eight organs",
+    "What did the creator actually build?",
+    "What's the most interesting thing in here?",
+  ],
+  skeptical: [
+    "What's actually shipped and working?",
+    "Show me the evidence — deployments, commits, real output",
+    "Is this real or vaporware?",
+    "What breaks first under load?",
+  ],
 };
+
+const ADVISOR_STARTERS = [
+  "What's the biggest risk to ORGANVM right now?",
+  "Which organ needs the most attention?",
+  "Am I over-engineering anything?",
+  "What historical pattern does my system most resemble?",
+  "Where should I focus this week for maximum leverage?",
+  "What would break first under real external load?",
+];
 
 interface MessageMeta {
   citations?: EvidenceCitation[];
@@ -104,6 +143,7 @@ export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [lens, setLens] = useState<AudienceLens | null>(null);
   const [mode, setMode] = useState<PersonaMode>(() => {
     if (typeof window === "undefined") return "hermeneus";
     return new URLSearchParams(window.location.search).get("mode") === "advisor"
@@ -116,8 +156,6 @@ export function ChatInterface() {
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const display = PERSONA_DISPLAY[mode];
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -140,6 +178,7 @@ export function ChatInterface() {
     }
 
     setMode(target);
+    setLens(null);
     const url = new URL(window.location.href);
     if (target === "advisor") {
       url.searchParams.set("mode", "advisor");
@@ -147,6 +186,10 @@ export function ChatInterface() {
       url.searchParams.delete("mode");
     }
     window.history.replaceState({}, "", url.toString());
+  }
+
+  function handleLensSelect(selectedLens: AudienceLens) {
+    setLens(selectedLens);
   }
 
   async function sendMessage(text: string) {
@@ -173,6 +216,7 @@ export function ChatInterface() {
             content: m.content,
           })),
           mode,
+          lens: lens ?? undefined,
         }),
       });
 
@@ -271,13 +315,32 @@ export function ChatInterface() {
     sendMessage(input);
   }
 
+  // Determine what to show in the empty state
+  const isAdvisor = mode === "advisor";
+  const showLensSelection = !isAdvisor && messages.length === 0 && !lens;
+  const showStarters = messages.length === 0 && (isAdvisor || lens !== null);
+  const starters = isAdvisor
+    ? ADVISOR_STARTERS
+    : lens
+      ? POST_LENS_STARTERS[lens]
+      : [];
+
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col">
-      {/* Last Synced Indicator + Mode Toggle */}
+      {/* Last Synced Indicator + Mode Toggle + Lens Badge */}
       <div className="flex items-center gap-2 px-1 py-2 text-[10px] text-[var(--color-text-dim)] mb-2 border-b border-[var(--color-border)] select-none">
         <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-fresh)] animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.4)]" />
         <span className="font-medium tracking-wide uppercase">System Synced:</span>
         <span className="font-mono text-[var(--color-text-muted)]">{syncDate}</span>
+        {lens && !isAdvisor && (
+          <button
+            onClick={() => { setLens(null); setMessages([]); }}
+            className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-0.5 text-[10px] font-medium text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors"
+            title="Change audience lens"
+          >
+            {lens} lens
+          </button>
+        )}
         <span className="flex-1" />
         <button
           onClick={handleModeToggle}
@@ -293,14 +356,48 @@ export function ChatInterface() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 pb-4 scroll-smooth">
-        {messages.length === 0 && (
+        {/* Lens selection (first-time Hermeneus experience) */}
+        {showLensSelection && (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <h2 className="text-2xl font-bold mb-2">{display.heading}</h2>
+            <h2 className="text-2xl font-bold mb-2">Hermeneus</h2>
+            <p className="text-[var(--color-text-muted)] mb-2 max-w-lg">
+              I know everything about this project and I&apos;m here to make it real for you.
+            </p>
+            <p className="text-[var(--color-text-dim)] mb-6 max-w-md text-sm">
+              How do you like to receive information?
+            </p>
+            <div className="flex flex-col gap-2 max-w-lg w-full">
+              {LENS_OPTIONS.map((opt) => (
+                <button
+                  key={opt.id}
+                  onClick={() => handleLensSelect(opt.id)}
+                  className="glass-panel rounded-lg px-5 py-3 text-left transition-all hover:scale-[1.01] active:scale-[0.99] hover:border-[var(--color-accent)] group"
+                >
+                  <span className="text-sm font-semibold text-white group-hover:text-[var(--color-accent)] transition-colors">
+                    {opt.label}
+                  </span>
+                  <span className="text-xs text-[var(--color-text-muted)] ml-2">
+                    — {opt.description}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Starters (after lens selection or in advisor mode) */}
+        {showStarters && (
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <h2 className="text-2xl font-bold mb-2">
+              {isAdvisor ? "Your Strategic Advisor" : "Hermeneus"}
+            </h2>
             <p className="text-[var(--color-text-muted)] mb-6 max-w-md">
-              {display.subtitle}
+              {isAdvisor
+                ? "An omniscient counselor drawing from history, systems theory, and institutional strategy."
+                : "Keeper of the record. Ask anything — I'll meet you where you are."}
             </p>
             <div className="flex flex-wrap justify-center gap-2 max-w-lg">
-              {display.starters.map((s) => (
+              {starters.map((s) => (
                 <button
                   key={s}
                   onClick={() => sendMessage(s)}
@@ -408,8 +505,12 @@ export function ChatInterface() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={display.placeholder}
-            disabled={isStreaming}
+            placeholder={isAdvisor
+              ? "Ask for strategic guidance, risk assessment, historical parallels..."
+              : lens
+                ? "What do you want to know?"
+                : "Select how you'd like to receive information first..."}
+            disabled={isStreaming || (!isAdvisor && !lens)}
             className="w-full chat-input focus:outline-none disabled:opacity-50"
           />
         </div>

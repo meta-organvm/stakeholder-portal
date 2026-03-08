@@ -2,15 +2,33 @@ import { describe, it, expect } from "vitest";
 import { planQuery } from "@/lib/query-planner";
 
 describe("query planner", () => {
-  it("classifies 'what is organvm' as deterministic", () => {
+  it("classifies 'what is organvm' as meta_vision", () => {
     const plan = planQuery("What is ORGANVM?");
-    expect(plan.strategy).toBe("deterministic");
-    expect(plan.estimated_cost).toBeLessThanOrEqual(2);
+    expect(plan.strategy).toBe("meta_vision");
   });
 
-  it("classifies 'last sprint' as deterministic", () => {
+  it("classifies identity questions as meta_vision", () => {
+    expect(planQuery("What did he make?").strategy).toBe("meta_vision");
+    expect(planQuery("Why does this matter?").strategy).toBe("meta_vision");
+    expect(planQuery("What's the point of all this?").strategy).toBe("meta_vision");
+    expect(planQuery("What is the vision?").strategy).toBe("meta_vision");
+    expect(planQuery("Who are you?").strategy).toBe("meta_vision");
+    expect(planQuery("What's the purpose?").strategy).toBe("meta_vision");
+    expect(planQuery("Convince me").strategy).toBe("meta_vision");
+    expect(planQuery("What's this all about?").strategy).toBe("meta_vision");
+    expect(planQuery("Why should I care?").strategy).toBe("meta_vision");
+    expect(planQuery("What is this project?").strategy).toBe("meta_vision");
+    expect(planQuery("Give me the elevator pitch").strategy).toBe("meta_vision");
+  });
+
+  it("classifies 'last sprint' as system_wide", () => {
     const plan = planQuery("What happened in the last sprint?");
-    expect(plan.strategy).toBe("deterministic");
+    expect(plan.strategy).toBe("system_wide");
+  });
+
+  it("classifies repo-count queries as system_wide", () => {
+    const plan = planQuery("How many repos per organ?");
+    expect(plan.strategy).toBe("system_wide");
   });
 
   it("classifies organ-specific queries as organ_scope", () => {
@@ -47,15 +65,15 @@ describe("query planner", () => {
   });
 
   it("estimates higher cost for complex strategies", () => {
-    const simple = planQuery("What is ORGANVM?");
+    const simple = planQuery("How many repos per organ?");
     const complex = planQuery("Compare all organs and their dependencies");
     expect(complex.estimated_cost).toBeGreaterThan(simple.estimated_cost);
   });
 
-  it("sets suggested_max_tokens based on strategy", () => {
-    const deterministic = planQuery("Flagship repos");
-    const exploratory = planQuery("Give me a broad overview of everything");
-    expect(deterministic.suggested_max_tokens).toBeLessThan(exploratory.suggested_max_tokens);
+  it("sets higher max_tokens for meta_vision than system_wide", () => {
+    const metaVision = planQuery("What is ORGANVM?");
+    const systemWide = planQuery("Flagship repos");
+    expect(metaVision.suggested_max_tokens).toBeGreaterThan(systemWide.suggested_max_tokens);
   });
 
   it("classifies external recency queries as live_research", () => {

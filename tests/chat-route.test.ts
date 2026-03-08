@@ -283,23 +283,37 @@ describe("POST /api/chat", () => {
     expect(body).toContain("data: [DONE]");
   });
 
-  it("returns deterministic sprint answer without calling provider", async () => {
+  it("routes sprint queries through the LLM instead of canned responses", async () => {
     const POST = await loadPostHandler();
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { role: "assistant", content: "The last sprint covered governance work." } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      )
+    );
     const res = await POST(
       makeRequest("10.0.0.6", { messages: [{ role: "user", content: "What happened in the last sprint?" }] })
     );
 
     expect(res.status).toBe(200);
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
     const body = await res.text();
-    expect(body).toContain("Last Sprint Status");
-    expect(body).toContain("completed sprints");
-    expect(body).toContain("\"source_name\":\"ORGANVM Manifest Snapshot\"");
+    expect(body).toContain("The last sprint covered governance work.");
   });
 
   it("includes diagnostics payload when CHAT_DIAGNOSTICS_ENABLED=1", async () => {
     process.env.CHAT_DIAGNOSTICS_ENABLED = "1";
     const POST = await loadPostHandler();
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { role: "assistant", content: "Sprint info here." } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      )
+    );
     const res = await POST(
       makeRequest("10.0.0.11", { messages: [{ role: "user", content: "What happened in the last sprint?" }] })
     );
@@ -307,8 +321,7 @@ describe("POST /api/chat", () => {
     expect(res.status).toBe(200);
     const body = await res.text();
     expect(body).toContain("\"diagnostics\":{");
-    expect(body).toContain("\"path\":\"deterministic\"");
-    expect(body).toContain("\"strategy\":\"deterministic\"");
+    expect(body).toContain("\"path\":\"hybrid_retrieval\"");
   });
 
   it("falls through to LLM when tech stack repo is unknown", async () => {

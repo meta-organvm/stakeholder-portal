@@ -74,9 +74,6 @@ function normalizeText(input: string): string {
     .trim();
 }
 
-function repoLink(repo: Repo): string {
-  return `[${repo.display_name}](/repos/${repo.slug})`;
-}
 
 function scoreRepoHint(repo: Repo, hint: string): number {
   const normalizedHint = normalizeText(hint);
@@ -118,14 +115,6 @@ function scoreRepoHint(repo: Repo, hint: string): number {
   return score;
 }
 
-function findRepoByHint(hint: string): Repo | null {
-  const scored = manifest.repos
-    .map((repo) => ({ repo, score: scoreRepoHint(repo, hint) }))
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score);
-
-  return scored[0]?.repo || null;
-}
 
 function listTopRepoSuggestions(hint: string, count = 3): Repo[] {
   return manifest.repos
@@ -136,113 +125,6 @@ function listTopRepoSuggestions(hint: string, count = 3): Repo[] {
     .map((s) => s.repo);
 }
 
-function buildDeterministicAnswer(queryText: string): string | null {
-  const query = queryText.trim();
-  if (!query) return null;
-
-  const q = normalizeText(query);
-
-  if (q.includes("what is organvm")) {
-    const s = manifest.system;
-    return [
-      "### What ORGANVM Is",
-      `ORGANVM is an eight-organ creative-institutional system spanning **${s.total_repos} repositories** across **${s.total_organs} organs**.`,
-      `Current system status: **${s.active_repos} active**, **${s.archived_repos} archived**, with **${manifest.deployments.length} live deployments** tracked in this snapshot.`,
-    ].join("\n\n");
-  }
-
-  if (q.includes("last sprint") || q.includes("recent sprint")) {
-    const s = manifest.system;
-    const sprintNames = s.sprint_names.length ? s.sprint_names.join(", ") : "None listed";
-    return [
-      "### Last Sprint Status",
-      `There are currently **${s.sprints_completed} completed sprints** in this snapshot (tracking since **${s.launch_date}**).`,
-      `Sprint history labels: ${sprintNames}.`,
-    ].join("\n\n");
-  }
-
-  if (
-    (q.includes("how many repos") || q.includes("repo count")) &&
-    (q.includes("each organ") || q.includes("per organ"))
-  ) {
-    const lines = manifest.organs
-      .map((o) => `- **${o.key} (${o.name})**: ${o.repo_count} repos`)
-      .join("\n");
-    return `### Repo Count by Organ\n${lines}`;
-  }
-
-  if (q.includes("flagship repos")) {
-    const flagships = manifest.repos
-      .filter((r) => r.tier.toLowerCase() === "flagship")
-      .sort((a, b) => a.display_name.localeCompare(b.display_name));
-    if (!flagships.length) return "No flagship repositories are marked in this manifest snapshot.";
-    return [
-      "### Flagship Repositories",
-      ...flagships.map(
-        (r) =>
-          `- ${repoLink(r)} — ${r.organ}, status: ${r.status}, promotion: ${r.promotion_status}`
-      ),
-    ].join("\n");
-  }
-
-  if (q.includes("deployed") && (q.includes("product") || q.includes("deployment"))) {
-    const repoByName = new Map(manifest.repos.map((r) => [r.name, r]));
-    const lines = manifest.deployments.slice(0, 20).map((d) => {
-      const repo = repoByName.get(d.repo);
-      return repo
-        ? `- ${repoLink(repo)}: ${d.url}`
-        : `- **${d.repo}**: ${d.url}`;
-    });
-    return [
-      "### Deployed Products (Top 20)",
-      ...lines,
-      "",
-      `Total tracked deployments: ${manifest.deployments.length}`,
-    ].join("\n");
-  }
-
-  if (q.includes("omega") && q.includes("status")) {
-    const omegaMentions = manifest.repos.filter((r) =>
-      normalizeText([r.name, r.display_name, r.description, r.ai_context].join(" ")).includes("omega")
-    );
-
-    if (!omegaMentions.length) {
-      return [
-        "There is no dedicated **omega status** field in the current schema.",
-        "No repositories in this snapshot explicitly mention omega in their metadata.",
-      ].join("\n\n");
-    }
-
-    return [
-      "There is no dedicated **omega status** field in the current schema.",
-      "Closest omega-related references in this snapshot:",
-      ...omegaMentions.map((r) => `- ${repoLink(r)} — ${r.description}`),
-    ].join("\n");
-  }
-
-  const techStackMatch = query.match(/tech\s*stack\s*(?:for|of)\s+(.+?)(?:[?.!]|$)/i);
-  if (techStackMatch?.[1]) {
-    const rawHint = techStackMatch[1].trim();
-    const repo = findRepoByHint(rawHint);
-    if (repo) {
-      return [
-        `### Tech Stack for ${repo.display_name}`,
-        `Repo: ${repoLink(repo)}`,
-        `- Organ: ${repo.organ}`,
-        `- Tier: ${repo.tier}`,
-        `- Status: ${repo.status}`,
-        `- Promotion: ${repo.promotion_status}`,
-        `- Stack: ${repo.tech_stack.length ? repo.tech_stack.join(", ") : "Not specified"}`,
-        `- Deployments: ${repo.deployment_urls.length ? repo.deployment_urls.join(", ") : "None listed"}`,
-      ].join("\n");
-    }
-
-    // No exact match — fall through to LLM with fuzzy matching via closestMatchHint
-    return null;
-  }
-
-  return null;
-}
 
 function getFreshnessLabel(freshness: number): Citation["freshness_label"] {
   if (freshness >= 0.95) return "live";
@@ -657,13 +539,19 @@ export async function POST(request: Request) {
     );
   }
 
-  // Parse persona mode
+  // Parse persona mode and audience lens
   const rawMode =
     typeof body === "object" && body !== null && "mode" in body
       ? (body as { mode?: unknown }).mode
       : undefined;
   const personaId: PersonaId = rawMode === "advisor" ? "advisor" : "hermeneus";
   const persona = getPersonaConfig(personaId);
+
+  const rawLens =
+    typeof body === "object" && body !== null && "lens" in body
+      ? (body as { lens?: unknown }).lens
+      : undefined;
+  const lens = typeof rawLens === "string" ? rawLens : undefined;
 
   // Auth gate for advisor mode
   if (persona.requiresAuth) {
@@ -738,23 +626,7 @@ export async function POST(request: Request) {
   const tier1 = buildTier1Context();
   const tier2 = buildTier2Context(sanitizedQuery);
 
-  // Deterministic answers (no LLM needed)
-  const deterministicAnswer = buildDeterministicAnswer(sanitizedQuery);
-  if (deterministicAnswer) {
-    const snapshotCitation = buildManifestSnapshotCitation();
-    trackChatPath("deterministic", requestStartedAtMs);
-    return createSseResponse(deterministicAnswer, [snapshotCitation], {
-      confidence: snapshotCitation.confidence,
-      coverage: 1,
-      strategy: "deterministic",
-      suggestions: queryPlan.suggested_followups,
-      answerability: queryPlan.answerability,
-      answerability_reason: queryPlan.answerability_reason,
-      diagnostics: buildDiagnostics(queryPlan, "deterministic", {
-        provider: { name: "none", status: "skipped" },
-      }, personaId),
-    });
-  }
+  // All queries go through the LLM with retrieved context — no canned responses.
 
   // Avoid pretending live web/news retrieval exists when only snapshot data is available.
   if (queryPlan.strategy === "live_research") {
@@ -819,8 +691,10 @@ export async function POST(request: Request) {
 
   // Hybrid retrieval with citations
   const retrieval = await hybridRetrieve(sanitizedQuery, {
-    maxSources: queryPlan.strategy === "single_repo" ? 5 : 15,
+    maxSources: queryPlan.strategy === "single_repo" ? 5 : queryPlan.strategy === "meta_vision" ? 20 : 15,
     includeGraph: queryPlan.strategy === "graph_traversal" || queryPlan.strategy === "cross_organ",
+    boostVision: queryPlan.strategy === "meta_vision",
+    queryStrategy: queryPlan.strategy,
   });
 
   const citations = buildCitations(retrieval.sources);
@@ -844,6 +718,8 @@ export async function POST(request: Request) {
     closestMatchHint,
     totalRepos: manifest.system.total_repos,
     totalOrgans: manifest.system.total_organs,
+    lens,
+    queryStrategy: queryPlan.strategy,
   });
 
   try {

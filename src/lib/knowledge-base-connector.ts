@@ -1,4 +1,5 @@
 import { RetrievalSource } from "./hybrid-retrieval";
+import type { QueryStrategy } from "./query-planner";
 
 const MY_KNOWLEDGE_BASE_API_URL = process.env.MY_KNOWLEDGE_BASE_API_URL;
 const MY_KNOWLEDGE_BASE_ENABLED = process.env.MY_KNOWLEDGE_BASE_ENABLED === "true";
@@ -11,18 +12,40 @@ export interface AtomicUnit {
   score?: number;
 }
 
-export async function fetchFederatedKnowledge(query: string, maxResults = 3): Promise<RetrievalSource[]> {
+interface StrategyParams {
+  maxResults: number;
+  timeoutMs: number;
+  relevanceMultiplier: number;
+}
+
+function getStrategyParams(strategy?: QueryStrategy): StrategyParams {
+  switch (strategy) {
+    case "meta_vision":
+      return { maxResults: 8, timeoutMs: 4000, relevanceMultiplier: 1.05 };
+    case "exploratory":
+    case "cross_organ":
+      return { maxResults: 5, timeoutMs: 3000, relevanceMultiplier: 0.9 };
+    default:
+      return { maxResults: 3, timeoutMs: 2000, relevanceMultiplier: 0.9 };
+  }
+}
+
+export async function fetchFederatedKnowledge(
+  query: string,
+  strategy?: QueryStrategy,
+): Promise<RetrievalSource[]> {
   if (!MY_KNOWLEDGE_BASE_ENABLED || !MY_KNOWLEDGE_BASE_API_URL) {
     return [];
   }
 
+  const params = getStrategyParams(strategy);
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 2000);
+  const timeoutId = setTimeout(() => controller.abort(), params.timeoutMs);
 
   try {
     const url = new URL(`${MY_KNOWLEDGE_BASE_API_URL}/search/hybrid`);
     url.searchParams.set("q", query);
-    url.searchParams.set("limit", maxResults.toString());
+    url.searchParams.set("limit", params.maxResults.toString());
 
     const res = await fetch(url.toString(), {
       signal: controller.signal,
@@ -41,10 +64,10 @@ export async function fetchFederatedKnowledge(query: string, maxResults = 3): Pr
 
     return results.map((unit) => ({
       id: unit.id,
-      type: "manifest", // Standard structure enforcement
+      type: "manifest" as const,
       name: `KB: ${unit.source}`,
       display_name: `Personal Knowledge Base`,
-      relevance: (unit.score ?? 0.5) * 0.9, // Slight normalization decay against authoritative manifest
+      relevance: (unit.score ?? 0.5) * params.relevanceMultiplier,
       freshness: 0.9,
       confidence: 0.8,
       snippet: unit.content.substring(0, 400),
@@ -55,7 +78,7 @@ export async function fetchFederatedKnowledge(query: string, maxResults = 3): Pr
   } catch (error: unknown) {
     const err = error as Error;
     if (err.name === "AbortError") {
-      console.warn(`[KnowledgeConnector] API request timed out after 2000ms`);
+      console.warn(`[KnowledgeConnector] API request timed out after ${params.timeoutMs}ms`);
     } else {
       console.warn(`[KnowledgeConnector] Fallback - failed to reach my-knowledge-base API: ${err.message}`);
     }

@@ -36,6 +36,39 @@ export function getDeployments(): Deployment[] {
   return manifest.deployments;
 }
 
+/** Structured organ data for external API consumers (consult page, etc.) */
+export function getOrgansForAPI() {
+  return manifest.organs.map((organ) => {
+    const repos = manifest.repos.filter((r) => r.organ === organ.key);
+    const techStacks = new Set<string>();
+    for (const r of repos) {
+      for (const t of r.tech_stack.slice(0, 5)) techStacks.add(t);
+    }
+    return {
+      key: organ.key,
+      name: organ.name,
+      greek: organ.greek,
+      domain: organ.domain,
+      description: organ.description,
+      repo_count: organ.repo_count,
+      status: organ.status,
+      capabilities: repos
+        .filter((r) => r.tier === "flagship" || r.description.length > 30)
+        .slice(0, 5)
+        .map((r) => `${r.display_name}: ${r.description.slice(0, 150)}`),
+      repos: repos.map((r) => ({
+        name: r.name,
+        display_name: r.display_name,
+        tier: r.tier,
+        description: r.description.slice(0, 200),
+        tech_stack: r.tech_stack.slice(0, 5),
+        deployment_urls: r.deployment_urls,
+      })),
+      tech_stacks: [...techStacks].slice(0, 15),
+    };
+  });
+}
+
 export function getDependencyGraph() {
   return manifest.dependency_graph;
 }

@@ -978,6 +978,35 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
   let totalErrors = 0;
   let consecutiveApiErrors = 0;
 
+  // Path-based content_class classifier
+  function classifyContentClass(repoName: string, relativePath: string): string | undefined {
+    const lower = relativePath.toLowerCase();
+    const baseName = path.basename(lower);
+
+    // Vision documents
+    if (baseName === "vision.md") return "vision";
+    if (lower.includes("lessons/")) return "vision";
+
+    // SOP and governance content
+    if (lower.includes("standards/") || lower.includes("sops/") || lower.includes("templates/")) return "sop";
+    if (lower.includes("governance") || baseName === "governance-rules.json") return "sop";
+
+    // praxis-perpetua and collective-persona-operations special handling
+    if (repoName === "praxis-perpetua") {
+      if (lower.includes("research/")) return "research";
+      if (lower.includes("standards/") || lower.includes("templates/")) return "sop";
+    }
+    if (repoName === "collective-persona-operations") {
+      if (baseName === "claude.md" || baseName === "agents.md" || baseName === "gemini.md") return "sop";
+      if (lower.includes("docs/pitch/")) return "sop";
+    }
+
+    // README and context files
+    if (baseName === "readme.md" || baseName === "claude.md") return "readme";
+
+    return undefined;
+  }
+
   for (const { repoInfo, repoPath, organKey } of manifestReposWithPaths) {
     // Abort early if embedding API is down (e.g. credits exhausted)
     if (consecutiveApiErrors >= 20) {
@@ -1016,6 +1045,7 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
       const content = fs.readFileSync(f, "utf-8");
       const stat = fs.statSync(f);
 
+      const contentClass = classifyContentClass(repoInfo.name, relativePath);
       const result = await embedChunks({
         repo: repoInfo.name,
         organ: organKey || "unknown",
@@ -1023,6 +1053,7 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
         content,
         fileMtime: stat.mtime,
         commitSha: headSha || undefined,
+        contentClass,
       });
 
       totalChunksInserted += result.inserted;
