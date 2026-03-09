@@ -9,6 +9,10 @@ import { loadEnvConfig } from "@next/env";
 import { embedChunks, getRepoCursor, setRepoCursor } from "./embed";
 import { extractSymbols } from "./symbol-extractor";
 import { repoFileTrees, codeSymbols } from "../db/schema";
+import {
+  sanitizeRepoSectionsForPublicManifest,
+  shouldIncludeRepoInPublicManifest,
+} from "../public-exposure-policy";
 
 loadEnvConfig(process.cwd());
 
@@ -22,11 +26,19 @@ const REGISTRY_PATH = path.join(CORPUS_DIR, "registry-v2.json");
 const METRICS_PATH = path.join(CORPUS_DIR, "system-metrics.json");
 const MANIFEST_OUTPUT = path.join(process.cwd(), "src", "data", "manifest.json");
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL =
+  process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/stakeholder_portal";
+const HAS_DATABASE_URL = Boolean(process.env.DATABASE_URL);
+const CLI_SKIP_VECTOR = process.argv.includes("--skip-vector");
 
-if (!DATABASE_URL) {
+if (!HAS_DATABASE_URL && !CLI_SKIP_VECTOR) {
   console.error("FATAL: DATABASE_URL is not set.");
   process.exit(1);
+}
+if (!HAS_DATABASE_URL && CLI_SKIP_VECTOR) {
+  console.warn(
+    "WARNING: DATABASE_URL is not set. Running in manifest-only mode because --skip-vector was provided.",
+  );
 }
 if (!process.env.EMBEDDING_API_KEY) {
   console.warn("WARNING: EMBEDDING_API_KEY is not set. Ingestion may fail if the provider requires auth.");
@@ -115,6 +127,7 @@ interface RegistryEntry {
   slug?: string;
   organ?: string;
   org?: string;
+  public?: boolean;
   tier?: string;
   status?: string;
   promotion_status?: string;
@@ -195,7 +208,6 @@ interface ManifestRepo {
   deployment_urls: string[];
   github_url: string;
   git_stats: GitStatistics;
-  file_index: string[];
   sections: Record<string, string>;
   ai_context: string;
   revenue_model: string | null;
@@ -333,78 +345,6 @@ function gitStats(repoPath: string): GitStatistics {
   }
 
   return stats;
-}
-
-function getFileIndex(repoPath: string): string[] {
-  const gitDir = path.join(repoPath, ".git");
-  if (!fs.existsSync(gitDir)) return [];
-
-  try {
-    const result = execSync("git ls-files", { cwd: repoPath, stdio: "pipe", timeout: 10000 }).toString().trim();
-    if (!result) return [];
-
-    const allFiles = result.split("\n").filter(Boolean);
-    const highValue = new Set<string>();
-
-    for (const f of allFiles) {
-      const depth = f.split("/").length - 1;
-
-      // All top-level files
-      if (depth === 0) {
-        highValue.add(f);
-        continue;
-      }
-
-      // Directory names at depth 1-2
-      const parts = f.split("/");
-      highValue.add(parts[0] + "/");
-      if (parts.length > 2) {
-        highValue.add(parts[0] + "/" + parts[1] + "/");
-      }
-
-      // Config files at any depth
-      const basename = path.basename(f);
-      const configFiles = [
-        "package.json", "Cargo.toml", "seed.yaml", "pyproject.toml",
-        "tsconfig.json", "Dockerfile", "Makefile", "Justfile",
-        ".eslintrc.json", "vitest.config.ts", "drizzle.config.ts",
-      ];
-      if (configFiles.includes(basename)) {
-        highValue.add(f);
-        continue;
-      }
-
-      // All markdown files
-      if (f.endsWith(".md")) {
-        highValue.add(f);
-        continue;
-      }
-
-      // .github/ workflow files
-      if (f.startsWith(".github/")) {
-        highValue.add(f);
-        continue;
-      }
-
-      // Source files at shallow depth
-      if (depth <= 2 && (f.endsWith(".ts") || f.endsWith(".py") || f.endsWith(".rs") || f.endsWith(".go"))) {
-        highValue.add(f);
-        continue;
-      }
-
-      // Key directories
-      if (f.startsWith("conductor/") || f.startsWith("archetypes/") || f.startsWith("src/core/")) {
-        highValue.add(f);
-        continue;
-      }
-      if (f.startsWith("scripts/") && (f.endsWith(".py") || f.endsWith(".ts") || f.endsWith(".sh"))) {
-        highValue.add(f);
-      }
-    }
-    return Array.from(highValue).sort().slice(0, 500);
-  } catch {
-    return [];
-  }
 }
 
 function buildAiContext(
@@ -744,16 +684,16 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
   const systemData = {
     name: "ORGANVM",
     tagline: "Eight-organ creative-institutional system",
-    total_repos: (computed.total_repos as number) || 0,
+    total_repos: 0,
     total_organs: (computed.total_organs as number) || 8,
     launch_date: registry.launch_date || "2026-02-11",
     sprints_completed: (computed.sprints_completed as number) || 0,
     sprint_names: (computed.sprint_names as string[]) || [],
-    ci_workflows: (computed.ci_workflows as number) || 0,
-    dependency_edges: (computed.dependency_edges as number) || 0,
+    ci_workflows: 0,
+    dependency_edges: 0,
     published_essays: (computed.published_essays as number) || 0,
-    active_repos: (computed.active_repos as number) || 0,
-    archived_repos: (computed.archived_repos as number) || 0,
+    active_repos: 0,
+    archived_repos: 0,
   };
 
   const organsData: ManifestOrgan[] = [];
@@ -772,6 +712,10 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
       aesthetic = readOrganAesthetic(organDir);
     }
 
+    const visibleRepositories = (organInfo.repositories || []).filter((repoEntry) =>
+      shouldIncludeRepoInPublicManifest(repoEntry),
+    );
+
     organsData.push({
       key: organKey,
       name: organInfo.name || "",
@@ -779,12 +723,12 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
       domain: ORGAN_DOMAIN[organKey] || "",
       org: organDirName,
       description: organInfo.description || "",
-      repo_count: (organInfo.repositories || []).length,
+      repo_count: visibleRepositories.length,
       status: organInfo.launch_status || "OPERATIONAL",
       aesthetic,
     });
 
-    for (const repoEntry of organInfo.repositories || []) {
+    for (const repoEntry of visibleRepositories) {
       const name = repoEntry.name || "";
       if (!name) continue;
 
@@ -863,7 +807,6 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
       }
 
       const gs = repoPath ? gitStats(repoPath) : {};
-      const fileIndex = repoPath ? getFileIndex(repoPath) : [];
       const aiContext = buildAiContext(name, description, techStack, allSections, deploymentUrls, organKey);
 
       const repoPayload: ManifestRepo = {
@@ -884,8 +827,7 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
         deployment_urls: deploymentUrls,
         github_url: org ? `https://github.com/${org}/${name}` : "",
         git_stats: gs,
-        file_index: fileIndex,
-        sections,
+        sections: sanitizeRepoSectionsForPublicManifest(sections),
         ai_context: aiContext,
         revenue_model: repoEntry.revenue_model ?? null,
         revenue_status: repoEntry.revenue_status ?? null,
@@ -900,6 +842,12 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
       manifestTotalProcessed++;
     }
   }
+
+  systemData.total_repos = reposData.length;
+  systemData.ci_workflows = reposData.filter((repo) => repo.ci_workflow).length;
+  systemData.dependency_edges = depEdges.length;
+  systemData.active_repos = reposData.filter((repo) => repo.status !== "ARCHIVED").length;
+  systemData.archived_repos = reposData.filter((repo) => repo.status === "ARCHIVED").length;
 
   const depGraph = {
     nodes: reposData.map(r => ({ id: `${r.org}/${r.name}`, organ: r.organ, tier: r.tier })),
@@ -926,6 +874,12 @@ export async function runIngestionWorker(allowStaleManifest = false, skipVector 
   fs.mkdirSync(path.dirname(MANIFEST_OUTPUT), { recursive: true });
   fs.writeFileSync(MANIFEST_OUTPUT, JSON.stringify(manifest, null, 2) + "\n");
   console.log(`Generated manifest: ${manifestTotalProcessed} repos, ${depEdges.length} dep edges -> ${MANIFEST_OUTPUT}`);
+
+  if (!HAS_DATABASE_URL && skipVector) {
+    console.log("Skipping DB-backed indexing because DATABASE_URL is not set and --skip-vector was provided.");
+    await pool.end();
+    return;
+  }
 
   // ----------------------------------------------------------------------------
   // Structural Indexing (file trees + symbols — no embedding API needed)

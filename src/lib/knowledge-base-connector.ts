@@ -1,5 +1,6 @@
 import { RetrievalSource } from "./hybrid-retrieval";
 import type { QueryStrategy } from "./query-planner";
+import { isNonPublicFacetExposureEnabled } from "./public-exposure-policy";
 
 const MY_KNOWLEDGE_BASE_API_URL = process.env.MY_KNOWLEDGE_BASE_API_URL;
 const MY_KNOWLEDGE_BASE_ENABLED = process.env.MY_KNOWLEDGE_BASE_ENABLED === "true";
@@ -34,7 +35,11 @@ export async function fetchFederatedKnowledge(
   query: string,
   strategy?: QueryStrategy,
 ): Promise<RetrievalSource[]> {
-  if (!MY_KNOWLEDGE_BASE_ENABLED || !MY_KNOWLEDGE_BASE_API_URL) {
+  if (
+    !isNonPublicFacetExposureEnabled() ||
+    !MY_KNOWLEDGE_BASE_ENABLED ||
+    !MY_KNOWLEDGE_BASE_API_URL
+  ) {
     return [];
   }
 
