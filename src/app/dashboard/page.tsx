@@ -1,10 +1,50 @@
 import { getManifest, getMetrics } from "@/lib/manifest";
 import { MetricGrid } from "@/components/MetricGrid";
+import { Sparkline } from "@/components/Sparkline";
 import { ORGAN_COLORS } from "@/lib/organ-colors";
+import { db } from "@/lib/db";
+import { pulseSnapshots } from "@/lib/db/pulse-schema";
+import { desc, gte } from "drizzle-orm";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const manifest = getManifest();
   const metrics = getMetrics();
+
+  // Live pulse data
+  let pulseData: { density: number; entities: number; edges: number; tensions: number; clusters: number; timestamp: Date } | null = null;
+  let densityHistory: number[] = [];
+
+  try {
+    const latest = await db
+      .select()
+      .from(pulseSnapshots)
+      .orderBy(desc(pulseSnapshots.timestamp))
+      .limit(1);
+
+    if (latest.length > 0) {
+      const s = latest[0];
+      pulseData = {
+        density: s.density,
+        entities: s.entities,
+        edges: s.edges,
+        tensions: s.tensions,
+        clusters: s.clusters,
+        timestamp: s.timestamp,
+      };
+    }
+
+    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const history = await db
+      .select({ density: pulseSnapshots.density })
+      .from(pulseSnapshots)
+      .where(gte(pulseSnapshots.timestamp, since))
+      .orderBy(pulseSnapshots.timestamp)
+      .limit(500);
+
+    densityHistory = history.map((h) => h.density);
+  } catch {
+    // Neon not available — pulse section won't render
+  }
 
   // Promotion pipeline
   const promoStats: Record<string, number> = {};
@@ -57,6 +97,40 @@ export default function DashboardPage() {
       </div>
 
       <MetricGrid metrics={metricItems} />
+
+      {/* Live System Pulse */}
+      {pulseData && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold">
+            System Pulse
+            <span className="ml-2 text-xs font-normal text-[var(--color-text-muted)]">
+              {pulseData.timestamp.toLocaleString()}
+            </span>
+          </h2>
+          <MetricGrid
+            metrics={[
+              { label: "Density", value: `${(pulseData.density * 100).toFixed(0)}%` },
+              { label: "Entities", value: pulseData.entities },
+              { label: "Edges", value: pulseData.edges },
+              { label: "Tensions", value: pulseData.tensions },
+              { label: "Clusters", value: pulseData.clusters },
+            ]}
+          />
+          {densityHistory.length >= 2 && (
+            <div className="mt-2">
+              <Sparkline
+                values={densityHistory}
+                width={300}
+                height={48}
+                color="var(--color-accent, #3b82f6)"
+              />
+              <div className="text-xs text-[var(--color-text-muted)]">
+                Density over 7 days ({densityHistory.length} samples)
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Promotion Pipeline */}

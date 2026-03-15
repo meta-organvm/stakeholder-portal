@@ -1,7 +1,11 @@
 import { getOrgans, getOrgan, getReposByOrgan } from "@/lib/manifest";
 import { RepoCard } from "@/components/RepoCard";
+import { MetricCard } from "@/components/MetricCard";
 import { ORGAN_COLORS } from "@/lib/organ-colors";
 import { notFound } from "next/navigation";
+import { db } from "@/lib/db";
+import { pulseSnapshots } from "@/lib/db/pulse-schema";
+import { desc } from "drizzle-orm";
 
 export function generateStaticParams() {
   return getOrgans().map((o) => ({ key: o.key }));
@@ -18,6 +22,28 @@ export default async function OrganDetailPage({
 
   const repos = getReposByOrgan(key);
   const color = ORGAN_COLORS[key] || "#64748b";
+
+  // Per-organ metrics from pulse
+  let organDensity: number | null = null;
+  let gateRate: number | null = null;
+
+  try {
+    const latest = await db
+      .select({
+        organDensities: pulseSnapshots.organDensities,
+        gateRates: pulseSnapshots.gateRates,
+      })
+      .from(pulseSnapshots)
+      .orderBy(desc(pulseSnapshots.timestamp))
+      .limit(1);
+
+    if (latest.length > 0) {
+      organDensity = latest[0].organDensities?.[key] ?? null;
+      gateRate = latest[0].gateRates?.[key] ?? null;
+    }
+  } catch {
+    // Neon not available
+  }
 
   const flagships = repos.filter((r) => r.tier === "flagship");
   const standard = repos.filter((r) => r.tier === "standard");
@@ -57,6 +83,19 @@ export default async function OrganDetailPage({
           </span>
         </div>
       </div>
+
+      {/* Per-organ metrics */}
+      {(organDensity !== null || gateRate !== null) && (
+        <div className="flex gap-4">
+          {organDensity !== null && (
+            <MetricCard label="Density" value={`${(organDensity * 100).toFixed(0)}%`} />
+          )}
+          {gateRate !== null && (
+            <MetricCard label="Gate Pass Rate" value={`${gateRate}%`} />
+          )}
+          <MetricCard label="Repositories" value={repos.length} />
+        </div>
+      )}
 
       {/* Aesthetic */}
       {organ.aesthetic.tone && (
