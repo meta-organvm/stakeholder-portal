@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+<title>Status Distribution</title>
+<style>
+  text { font-family: "SF Mono", "Fira Code", monospace; }
+  .label { font-size: 11px; fill: currentColor; }
+  .title { font-size: 14px; font-weight: 600; fill: currentColor; }
+  .stat { font-size: 10px; fill: currentColor; opacity: 0.7; }
+  .big { font-size: 28px; font-weight: 700; fill: currentColor; }
+</style>
+
+<rect width="500" height="500" fill="#0f0f23"/>
+<path d="M 250.0 60.0 A 190.0 190.0 0 0 1 289.7 435.8 L 271.9 352.2 A 104.5 104.5 0 0 0 250.0 145.5 Z" fill="#e94560" opacity="0.8"/>
+<text x="396.4" y="234.5" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23" font-size="9">54</text>
+<path d="M 284.1 436.9 A 190.0 190.0 0 0 1 168.1 78.6 L 205.0 155.7 A 104.5 104.5 0 0 0 268.8 352.8 Z" fill="#6b7280" opacity="0.8"/>
+<text x="109.9" y="295.4" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23" font-size="9">53</text>
+<path d="M 173.3 76.2 A 190.0 190.0 0 0 1 212.5 63.7 L 229.4 147.6 A 104.5 104.5 0 0 0 207.8 154.4 Z" fill="#4ade80" opacity="0.8"/>
+<path d="M 218.1 62.7 A 190.0 190.0 0 0 1 228.3 61.2 L 238.1 146.2 A 104.5 104.5 0 0 0 232.5 147.0 Z" fill="#6b7280" opacity="0.8"/>
+<path d="M 234.0 60.7 A 190.0 190.0 0 0 1 244.3 60.1 L 246.9 145.5 A 104.5 104.5 0 0 0 241.2 145.9 Z" fill="#60a5fa" opacity="0.8"/>
+<circle cx="250.0" cy="250.0" r="103.5" fill="#0f0f23"/>
+<text x="250.0" y="244.0" class="big" text-anchor="middle" fill="#d4d4d8">113</text>
+<text x="250.0" y="264.0" class="stat" text-anchor="middle" fill="#6b7280">repos</text>
+<rect x="20" y="392" width="10" height="10" fill="#e94560" rx="2"/>
+<text x="36" y="400" class="stat" text-anchor="start" fill="#d4d4d8">GRADUATED (54)</text>
+<rect x="20" y="408" width="10" height="10" fill="#6b7280" rx="2"/>
+<text x="36" y="416" class="stat" text-anchor="start" fill="#d4d4d8">ARCHIVED (53)</text>
+<rect x="20" y="424" width="10" height="10" fill="#4ade80" rx="2"/>
+<text x="36" y="432" class="stat" text-anchor="start" fill="#d4d4d8">PUBLIC_PROCESS (4)</text>
+<rect x="20" y="440" width="10" height="10" fill="#6b7280" rx="2"/>
+<text x="36" y="448" class="stat" text-anchor="start" fill="#d4d4d8">LOCAL (1)</text>
+<rect x="20" y="456" width="10" height="10" fill="#60a5fa" rx="2"/>
+<text x="36" y="464" class="stat" text-anchor="start" fill="#d4d4d8">CANDIDATE (1)</text>
+<text x="250.0" y="25.0" class="title" text-anchor="middle" fill="#d4d4d8">Promotion Status Distribution</text>
+</svg>

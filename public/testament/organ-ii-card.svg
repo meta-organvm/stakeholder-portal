@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="400" height="280">
+<title>ORGANVM — Poiesis</title>
+<style>
+  text { font-family: "SF Mono", "Fira Code", monospace; }
+  .label { font-size: 11px; fill: currentColor; }
+  .title { font-size: 14px; font-weight: 600; fill: currentColor; }
+  .stat { font-size: 10px; fill: currentColor; opacity: 0.7; }
+  .big { font-size: 28px; font-weight: 700; fill: currentColor; }
+</style>
+
+<rect width="400" height="280" fill="#0f0f23" rx="8"/>
+<rect x="1" y="1" width="398" height="278" fill="none" stroke="#e94560" stroke-width="1" rx="7" opacity="0.4"/>
+<rect x="0" y="0" width="400" height="50" fill="#16213e" rx="8"/>
+<rect x="0" y="40" width="400" height="10" fill="#16213e"/>
+<text x="20.0" y="32.0" class="title" text-anchor="start" fill="#e94560">ORGAN II</text>
+<text x="380.0" y="32.0" class="title" text-anchor="end" fill="#d4d4d8">Poiesis</text>
+<text x="30.0" y="75.0" class="stat" text-anchor="start" fill="#6b7280">Repositories</text>
+<text x="150.0" y="75.0" class="label" text-anchor="start" fill="#d4d4d8">32</text>
+<text x="220.0" y="75.0" class="stat" text-anchor="start" fill="#6b7280">Flagships</text>
+<text x="340.0" y="75.0" class="label" text-anchor="start" fill="#d4d4d8">2</text>
+<text x="30.0" y="97.0" class="stat" text-anchor="start" fill="#6b7280">Dependency edges</text>
+<text x="150.0" y="97.0" class="label" text-anchor="start" fill="#d4d4d8">0</text>
+<text x="220.0" y="97.0" class="stat" text-anchor="start" fill="#6b7280">ARCHIVED</text>
+<text x="340.0" y="97.0" class="label" text-anchor="start" fill="#d4d4d8">23</text>
+<text x="30.0" y="119.0" class="stat" text-anchor="start" fill="#6b7280">GRADUATED</text>
+<text x="150.0" y="119.0" class="label" text-anchor="start" fill="#d4d4d8">7</text>
+<text x="220.0" y="119.0" class="stat" text-anchor="start" fill="#6b7280">PUBLIC_PROCESS</text>
+<text x="340.0" y="119.0" class="label" text-anchor="start" fill="#d4d4d8">1</text>
+<text x="30.0" y="141.0" class="stat" text-anchor="start" fill="#6b7280">LOCAL</text>
+<text x="150.0" y="141.0" class="label" text-anchor="start" fill="#d4d4d8">1</text>
+<text x="200.0" y="268.0" class="stat" text-anchor="middle" fill="#6b7280">ORGANVM TESTAMENT</text>
+</svg>

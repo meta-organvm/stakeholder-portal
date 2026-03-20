@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="600" height="350">
+<title>ORGANVM — Organ Density</title>
+<style>
+  text { font-family: "SF Mono", "Fira Code", monospace; }
+  .label { font-size: 11px; fill: currentColor; }
+  .title { font-size: 14px; font-weight: 600; fill: currentColor; }
+  .stat { font-size: 10px; fill: currentColor; opacity: 0.7; }
+  .big { font-size: 28px; font-weight: 700; fill: currentColor; }
+</style>
+
+<rect width="600" height="350" fill="#0f0f23"/>
+<text x="300.0" y="25.0" class="title" text-anchor="middle" fill="#d4d4d8">System Density by Organ</text>
+<rect x="110" y="50" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="50" width="315.0" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="66.0" class="label" text-anchor="end" fill="#d4d4d8">Meta (META)</text>
+<text x="433.0" y="66.0" class="stat" text-anchor="start" fill="#6b7280">70%</text>
+<rect x="110" y="84" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="84" width="261.0" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="100.0" class="label" text-anchor="end" fill="#d4d4d8">Theoria (I)</text>
+<text x="379.0" y="100.0" class="stat" text-anchor="start" fill="#6b7280">57%</text>
+<rect x="110" y="118" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="118" width="252.0" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="134.0" class="label" text-anchor="end" fill="#d4d4d8">Ergon (III)</text>
+<text x="370.0" y="134.0" class="stat" text-anchor="start" fill="#6b7280">56%</text>
+<rect x="110" y="152" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="152" width="216.0" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="168.0" class="label" text-anchor="end" fill="#d4d4d8">Poiesis (II)</text>
+<text x="334.0" y="168.0" class="stat" text-anchor="start" fill="#6b7280">48%</text>
+<rect x="110" y="186" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="186" width="202.5" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="202.0" class="label" text-anchor="end" fill="#d4d4d8">Taxis (IV)</text>
+<text x="320.5" y="202.0" class="stat" text-anchor="start" fill="#6b7280">45%</text>
+<rect x="110" y="220" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="220" width="157.5" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="236.0" class="label" text-anchor="end" fill="#d4d4d8">Logos (V)</text>
+<text x="275.5" y="236.0" class="stat" text-anchor="start" fill="#6b7280">35%</text>
+<rect x="110" y="254" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="254" width="135.0" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="270.0" class="label" text-anchor="end" fill="#d4d4d8">Koinonia (VI)</text>
+<text x="253.0" y="270.0" class="stat" text-anchor="start" fill="#6b7280">30%</text>
+<rect x="110" y="288" width="450" height="24" fill="#1a1a2e" rx="3"/>
+<rect x="110" y="288" width="112.5" height="24" fill="#e94560" opacity="0.75" rx="3"/>
+<text x="102.0" y="304.0" class="label" text-anchor="end" fill="#d4d4d8">Kerygma (VII)</text>
+<text x="230.5" y="304.0" class="stat" text-anchor="start" fill="#6b7280">25%</text>
+</svg>

@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+<title>ORGANVM — System Constellation</title>
+<style>
+  text { font-family: "SF Mono", "Fira Code", monospace; }
+  .label { font-size: 11px; fill: currentColor; }
+  .title { font-size: 14px; font-weight: 600; fill: currentColor; }
+  .stat { font-size: 10px; fill: currentColor; opacity: 0.7; }
+  .big { font-size: 28px; font-weight: 700; fill: currentColor; }
+</style>
+
+<rect width="800" height="600" fill="#0f0f23"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e94560" opacity="0.6"/></marker></defs>
+<line x1="430.0" y1="99.3" x2="559.5" y2="139.6" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="615.5" y1="183.3" x2="660.9" y2="265.4" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="584.8" y1="424.6" x2="417.1" y2="121.0" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="598.0" y1="421.2" x2="598.0" y2="191.8" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="611.2" y1="424.6" x2="660.9" y2="334.6" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="572.0" y1="456.6" x2="422.6" y2="503.0" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="570.7" y1="448.5" x2="229.8" y2="448.5" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="572.0" y1="440.4" x2="144.8" y2="307.7" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<line x1="223.8" y1="167.9" x2="573.0" y2="429.7" stroke="#6b7280" stroke-width="1.2" opacity="0.35" marker-end="url(#arrow)"/>
+<circle cx="400.0" cy="90.0" r="33.4" fill="#e94560" opacity="0.08"/>
+<circle cx="400.0" cy="90.0" r="30.4" fill="#e94560" opacity="0.12"/>
+<circle cx="400.0" cy="90.0" r="27.4" fill="#16213e" stroke="#e94560" stroke-width="1.5"/>
+<text x="400.0" y="52.6" class="label" text-anchor="middle" fill="#d4d4d8">Theoria</text>
+<text x="400.0" y="94.0" class="stat" text-anchor="middle" fill="#d4d4d8">I</text>
+<text x="400.0" y="106.0" class="stat" text-anchor="middle" fill="#6b7280">19r</text>
+<circle cx="598.0" cy="151.5" r="38.3" fill="#e94560" opacity="0.08"/>
+<circle cx="598.0" cy="151.5" r="35.3" fill="#e94560" opacity="0.12"/>
+<circle cx="598.0" cy="151.5" r="32.3" fill="#16213e" stroke="#e94560" stroke-width="1.5"/>
+<text x="598.0" y="109.2" class="label" text-anchor="middle" fill="#d4d4d8">Poiesis</text>
+<text x="598.0" y="155.5" class="stat" text-anchor="middle" fill="#d4d4d8">II</text>
+<text x="598.0" y="167.5" class="stat" text-anchor="middle" fill="#6b7280">31r</text>
+<circle cx="680.0" cy="300.0" r="37.5" fill="#e94560" opacity="0.08"/>
+<circle cx="680.0" cy="300.0" r="34.5" fill="#e94560" opacity="0.12"/>
+<circle cx="680.0" cy="300.0" r="31.5" fill="#16213e" stroke="#e94560" stroke-width="1.5"/>
+<text x="680.0" y="258.5" class="label" text-anchor="middle" fill="#d4d4d8">Ergon</text>
+<text x="680.0" y="304.0" class="stat" text-anchor="middle" fill="#d4d4d8">III</text>
+<text x="680.0" y="316.0" class="stat" text-anchor="middle" fill="#6b7280">29r</text>
+<circle cx="598.0" cy="448.5" r="29.3" fill="#e94560" opacity="0.08"/>
+<circle cx="598.0" cy="448.5" r="26.3" fill="#e94560" opacity="0.12"/>
+<circle cx="598.0" cy="448.5" r="23.3" fill="#16213e" stroke="#e94560" stroke-width="1.5"/>
+<text x="598.0" y="415.2" class="label" text-anchor="middle" fill="#d4d4d8">Taxis</text>
+<text x="598.0" y="452.5" class="stat" text-anchor="middle" fill="#d4d4d8">IV</text>
+<text x="598.0" y="464.5" class="stat" text-anchor="middle" fill="#6b7280">11r</text>
+<circle cx="400.0" cy="510.0" r="21.7" fill="#e94560" opacity="0.08"/>
+<circle cx="400.0" cy="510.0" r="18.7" fill="#e94560" opacity="0.12"/>
+<circle cx="400.0" cy="510.0" r="15.7" fill="#16213e" stroke="#e94560" stroke-width="1.5"/>
+<text x="400.0" y="484.3" class="label" text-anchor="middle" fill="#d4d4d8">Logos</text>
+<text x="400.0" y="514.0" class="stat" text-anchor="middle" fill="#d4d4d8">V</text>
+<text x="400.0" y="526.0" class="stat" text-anchor="middle" fill="#6b7280">2r</text>
+<circle cx="202.0" cy="448.5" r="25.8" fill="#e94560" opacity="0.08"/>
+<circle cx="202.0" cy="448.5" r="22.8" fill="#e94560" opacity="0.12"/>
+<circle cx="202.0" cy="448.5" r="19.8" fill="#16213e" stroke="#e94560" stroke-width="1.5"/>
+<text x="202.0" y="418.7" class="label" text-anchor="middle" fill="#d4d4d8">Koinonia</text>
+<text x="202.0" y="452.5" class="stat" text-anchor="middle" fill="#d4d4d8">VI</text>
+<text x="202.0" y="464.5" class="stat" text-anchor="middle" fill="#6b7280">6r</text>
+<circle cx="120.0" cy="300.0" r="24.0" fill="#e94560" opacity="0.08"/>
+<circle cx="120.0" cy="300.0" r="21.0" fill="#e94560" opacity="0.12"/>
+<circle cx="120.0" cy="300.0" r="18.0" fill="#16213e" stroke="#e94560" stroke-width="1.5"/>
+<text x="120.0" y="272.0" class="label" text-anchor="middle" fill="#d4d4d8">Kerygma</text>
+<text x="120.0" y="304.0" class="stat" text-anchor="middle" fill="#d4d4d8">VII</text>
+<text x="120.0" y="316.0" class="stat" text-anchor="middle" fill="#6b7280">4r</text>
+<circle cx="202.0" cy="151.5" r="29.3" fill="#e94560" opacity="0.08"/>
+<circle cx="202.0" cy="151.5" r="26.3" fill="#e94560" opacity="0.12"/>
+<circle cx="202.0" cy="151.5" r="23.3" fill="#e94560" stroke="#e94560" stroke-width="1.5"/>
+<text x="202.0" y="118.2" class="label" text-anchor="middle" fill="#d4d4d8">Meta</text>
+<text x="202.0" y="155.5" class="stat" text-anchor="middle" fill="#d4d4d8">META</text>
+<text x="202.0" y="167.5" class="stat" text-anchor="middle" fill="#6b7280">11r</text>
+<text x="400.0" y="30.0" class="title" text-anchor="middle" fill="#d4d4d8">ORGANVM — System Constellation</text>
+<text x="400.0" y="585.0" class="stat" text-anchor="middle" fill="#6b7280">113 repositories across 8 organs</text>
+</svg>

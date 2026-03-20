@@ -45,6 +45,9 @@ export default function RootLayout({
               <Link href="/constitution" className="hover:text-blue-400 transition-colors">
                 Constitution
               </Link>
+              <Link href="/testament" className="hover:text-blue-400 transition-colors">
+                Testament
+              </Link>
               <Link href="/ask" className="hover:text-blue-400 transition-colors">
                 Ask
               </Link>

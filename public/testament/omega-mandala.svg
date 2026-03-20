@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+<title>Omega Scorecard — 8/17</title>
+<style>
+  text { font-family: "SF Mono", "Fira Code", monospace; }
+  .label { font-size: 11px; fill: currentColor; }
+  .title { font-size: 14px; font-weight: 600; fill: currentColor; }
+  .stat { font-size: 10px; fill: currentColor; opacity: 0.7; }
+  .big { font-size: 28px; font-weight: 700; fill: currentColor; }
+</style>
+
+<rect width="500" height="500" fill="#0f0f23"/>
+<path d="M 250.0 250.0 L 250.0 60.0 A 190.0 190.0 0 0 1 315.1 71.5 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="273.0" y="119.5" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#1</text>
+<path d="M 250.0 250.0 L 318.6 72.8 A 190.0 190.0 0 0 1 375.2 107.1 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="318.6" y="136.7" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#2</text>
+<path d="M 250.0 250.0 L 378.0 109.6 A 190.0 190.0 0 0 1 418.4 161.9 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="354.9" y="169.1" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#3</text>
+<path d="M 250.0 250.0 L 420.1 165.3 A 190.0 190.0 0 0 1 438.8 228.7 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="377.1" y="212.5" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#4</text>
+<path d="M 250.0 250.0 L 439.2 232.5 A 190.0 190.0 0 0 1 433.8 298.3 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="382.1" y="260.9" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#5</text>
+<path d="M 250.0 250.0 L 432.7 302.0 A 190.0 190.0 0 0 1 403.9 361.4 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="369.2" y="307.9" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#6</text>
+<path d="M 250.0 250.0 L 401.6 364.5 A 190.0 190.0 0 0 1 353.2 409.5 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="340.2" y="347.0" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#7</text>
+<path d="M 250.0 250.0 L 350.0 411.5 A 190.0 190.0 0 0 1 288.6 436.0 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="299.1" y="373.1" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#8</text>
+<path d="M 250.0 250.0 L 284.9 436.8 A 190.0 190.0 0 0 1 218.8 437.4 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="251.3" y="382.5" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#9</text>
+<path d="M 250.0 250.0 L 215.1 436.8 A 190.0 190.0 0 0 1 153.2 413.5 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="203.4" y="374.0" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#10</text>
+<path d="M 250.0 250.0 L 150.0 411.5 A 190.0 190.0 0 0 1 100.7 367.5 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="161.7" y="348.8" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#11</text>
+<path d="M 250.0 250.0 L 98.4 364.5 A 190.0 190.0 0 0 1 68.3 305.6 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="132.0" y="310.2" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#12</text>
+<path d="M 250.0 250.0 L 67.3 302.0 A 190.0 190.0 0 0 1 60.5 236.3 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="118.2" y="263.5" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#13</text>
+<path d="M 250.0 250.0 L 60.8 232.5 A 190.0 190.0 0 0 1 78.3 168.7 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="122.2" y="215.0" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#14</text>
+<path d="M 250.0 250.0 L 79.9 165.3 A 190.0 190.0 0 0 1 119.2 112.2 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="143.5" y="171.2" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#15</text>
+<path d="M 250.0 250.0 L 122.0 109.6 A 190.0 190.0 0 0 1 177.8 74.2 Z" fill="#1a1a2e" opacity="0.25" stroke="#6b7280" stroke-width="0.5"/>
+<text x="179.1" y="138.0" class="stat" text-anchor="middle" dominant-baseline="central" fill="#6b7280">#16</text>
+<path d="M 250.0 250.0 L 181.4 72.8 A 190.0 190.0 0 0 1 246.2 60.0 Z" fill="#e94560" opacity="0.85" stroke="#6b7280" stroke-width="0.5"/>
+<text x="224.4" y="120.0" class="stat" text-anchor="middle" dominant-baseline="central" fill="#0f0f23">#17</text>
+<circle cx="250.0" cy="250.0" r="75.0" fill="#0f0f23"/>
+<circle cx="250.0" cy="250.0" r="73.0" fill="#16213e" opacity="0.30"/>
+<text x="250.0" y="244.0" class="big" text-anchor="middle" fill="#e94560">8</text>
+<text x="250.0" y="264.0" class="stat" text-anchor="middle" fill="#6b7280">of 17</text>
+<text x="250.0" y="25.0" class="title" text-anchor="middle" fill="#d4d4d8">Omega Scorecard</text>
+<text x="250.0" y="485.0" class="stat" text-anchor="middle" fill="#6b7280">47% system maturity</text>
+</svg>

@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+<title>Repository Heatmap</title>
+<style>
+  text { font-family: "SF Mono", "Fira Code", monospace; }
+  .label { font-size: 11px; fill: currentColor; }
+  .title { font-size: 14px; font-weight: 600; fill: currentColor; }
+  .stat { font-size: 10px; fill: currentColor; opacity: 0.7; }
+  .big { font-size: 28px; font-weight: 700; fill: currentColor; }
+</style>
+
+<rect width="800" height="400" fill="#0f0f23"/>
+<text x="400.0" y="25.0" class="title" text-anchor="middle" fill="#d4d4d8">Repository Heatmap by Organ</text>
+<text x="92.0" y="60.0" class="stat" text-anchor="end" fill="#6b7280">Meta (12)</text>
+<rect x="100" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<rect x="116" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>organvm-corpvs-testamentvm (GRADUATED)</title></rect>
+<rect x="132" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>alchemia-ingestvm (GRADUATED)</title></rect>
+<rect x="148" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>schema-definitions (GRADUATED)</title></rect>
+<rect x="164" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>organvm-engine (GRADUATED)</title></rect>
+<rect x="180" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>system-dashboard (GRADUATED)</title></rect>
+<rect x="196" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>organvm-mcp-server (GRADUATED)</title></rect>
+<rect x="212" y="50" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>praxis-perpetua (GRADUATED)</title></rect>
+<rect x="228" y="50" width="14" height="14" fill="#4ade80" rx="2" opacity="0.85"><title>stakeholder-portal (PUBLIC_PROCESS)</title></rect>
+<rect x="244" y="50" width="14" height="14" fill="#60a5fa" rx="2" opacity="0.85"><title>materia-collider (CANDIDATE)</title></rect>
+<rect x="260" y="50" width="14" height="14" fill="#4ade80" rx="2" opacity="0.85"><title>organvm-ontologia (PUBLIC_PROCESS)</title></rect>
+<rect x="276" y="50" width="14" height="14" fill="#374151" rx="2" opacity="0.85"><title>vigiles-aeternae--agon-cosmogonicum (LOCAL)</title></rect>
+<text x="92.0" y="84.0" class="stat" text-anchor="end" fill="#6b7280">Theoria (21)</text>
+<rect x="100" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>recursive-engine--generative-entity (GRADUATED)</title></rect>
+<rect x="116" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>organon-noumenon--ontogenetic-morphe (ARCHIVED)</title></rect>
+<rect x="132" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>auto-revision-epistemic-engine (GRADUATED)</title></rect>
+<rect x="148" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>narratological-algorithmic-lenses (GRADUATED)</title></rect>
+<rect x="164" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>call-function--ontological (GRADUATED)</title></rect>
+<rect x="180" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>sema-metra--alchemica-mundi (GRADUATED)</title></rect>
+<rect x="196" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>cognitive-archaelogy-tribunal (GRADUATED)</title></rect>
+<rect x="212" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>a-recursive-root (ARCHIVED)</title></rect>
+<rect x="228" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>radix-recursiva-solve-coagula-redi (ARCHIVED)</title></rect>
+<rect x="244" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<rect x="260" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>nexus--babel-alexandria (ARCHIVED)</title></rect>
+<rect x="276" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>4-ivi374-F0Rivi4 (ARCHIVED)</title></rect>
+<rect x="292" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>cog-init-1-0- (ARCHIVED)</title></rect>
+<rect x="308" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>linguistic-atomization-framework (GRADUATED)</title></rect>
+<rect x="324" y="74" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>my-knowledge-base (GRADUATED)</title></rect>
+<rect x="340" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>scalable-lore-expert (ARCHIVED)</title></rect>
+<rect x="356" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>meta-source--ledger-output (ARCHIVED)</title></rect>
+<rect x="372" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>hierarchia-mundi (ARCHIVED)</title></rect>
+<rect x="388" y="74" width="14" height="14" fill="#4ade80" rx="2" opacity="0.85"><title>styx-behavioral-economics-theory (PUBLIC_PROCESS)</title></rect>
+<rect x="404" y="74" width="14" height="14" fill="#374151" rx="2" opacity="0.85"><title>vigiles-aeternae--corpus-mythicum (LOCAL)</title></rect>
+<rect x="420" y="74" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>studium-generale (ARCHIVED)</title></rect>
+<text x="92.0" y="108.0" class="stat" text-anchor="end" fill="#6b7280">Poiesis (32)</text>
+<rect x="100" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>core-engine (ARCHIVED)</title></rect>
+<rect x="116" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>performance-sdk (ARCHIVED)</title></rect>
+<rect x="132" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>example-generative-music (ARCHIVED)</title></rect>
+<rect x="148" y="98" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>metasystem-master (GRADUATED)</title></rect>
+<rect x="164" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>example-choreographic-interface (ARCHIVED)</title></rect>
+<rect x="180" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>showcase-portfolio (ARCHIVED)</title></rect>
+<rect x="196" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>archive-past-works (ARCHIVED)</title></rect>
+<rect x="212" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>case-studies-methodology (ARCHIVED)</title></rect>
+<rect x="228" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>learning-resources (ARCHIVED)</title></rect>
+<rect x="244" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>example-generative-visual (ARCHIVED)</title></rect>
+<rect x="260" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>example-interactive-installation (ARCHIVED)</title></rect>
+<rect x="276" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>example-ai-collaboration (ARCHIVED)</title></rect>
+<rect x="292" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>docs (ARCHIVED)</title></rect>
+<rect x="308" y="98" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>a-mavs-olevm (GRADUATED)</title></rect>
+<rect x="324" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>a-i-council--coliseum (ARCHIVED)</title></rect>
+<rect x="340" y="98" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<rect x="356" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>artist-toolkit-and-templates (ARCHIVED)</title></rect>
+<rect x="372" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>client-sdk (ARCHIVED)</title></rect>
+<rect x="388" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>academic-publication (ARCHIVED)</title></rect>
+<rect x="404" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>example-theatre-dialogue (ARCHIVED)</title></rect>
+<rect x="420" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>audio-synthesis-bridge (ARCHIVED)</title></rect>
+<rect x="436" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>art-from--auto-revision-epistemic-engine (ARCHIVED)</title></rect>
+<rect x="452" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>art-from--narratological-algorithmic-lenses (ARCHIVED)</title></rect>
+<rect x="468" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>life-betterment-simulation (ARCHIVED)</title></rect>
+<rect x="484" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>universal-waveform-explorer (ARCHIVED)</title></rect>
+<rect x="500" y="98" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>shared-remembrance-gateway (ARCHIVED)</title></rect>
+<rect x="516" y="98" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>chthon-oneiros (GRADUATED)</title></rect>
+<rect x="532" y="98" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>krypto-velamen (GRADUATED)</title></rect>
+<rect x="548" y="98" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>alchemical-synthesizer (GRADUATED)</title></rect>
+<rect x="564" y="98" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>ivi374ivi027-05 (GRADUATED)</title></rect>
+<rect x="580" y="98" width="14" height="14" fill="#4ade80" rx="2" opacity="0.85"><title>styx-behavioral-art (PUBLIC_PROCESS)</title></rect>
+<rect x="596" y="98" width="14" height="14" fill="#374151" rx="2" opacity="0.85"><title>vigiles-aeternae--theatrum-mundi (LOCAL)</title></rect>
+<text x="92.0" y="132.0" class="stat" text-anchor="end" fill="#6b7280">Ergon (29)</text>
+<rect x="100" y="122" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>classroom-rpg-aetheria (GRADUATED)</title></rect>
+<rect x="116" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>gamified-coach-interface (ARCHIVED)</title></rect>
+<rect x="132" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>trade-perpetual-future (ARCHIVED)</title></rect>
+<rect x="148" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>fetch-familiar-friends (ARCHIVED)</title></rect>
+<rect x="164" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>sovereign-ecosystem--real-estate-luxury (ARCHIVED)</title></rect>
+<rect x="180" y="122" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>public-record-data-scrapper (GRADUATED)</title></rect>
+<rect x="196" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>search-local--happy-hour (ARCHIVED)</title></rect>
+<rect x="212" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>multi-camera--livestream--framework (ARCHIVED)</title></rect>
+<rect x="228" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>universal-mail--automation (ARCHIVED)</title></rect>
+<rect x="244" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>mirror-mirror (ARCHIVED)</title></rect>
+<rect x="260" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>the-invisible-ledger (ARCHIVED)</title></rect>
+<rect x="276" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>enterprise-plugin (ARCHIVED)</title></rect>
+<rect x="292" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>virgil-training-overlay (ARCHIVED)</title></rect>
+<rect x="308" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>tab-bookmark-manager (ARCHIVED)</title></rect>
+<rect x="324" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>a-i-chat--exporter (ARCHIVED)</title></rect>
+<rect x="340" y="122" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<rect x="356" y="122" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>the-actual-news (GRADUATED)</title></rect>
+<rect x="372" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>your-fit-tailored (ARCHIVED)</title></rect>
+<rect x="388" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>my-block-warfare (ARCHIVED)</title></rect>
+<rect x="404" y="122" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>life-my--midst--in (GRADUATED)</title></rect>
+<rect x="420" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>my--father-mother (ARCHIVED)</title></rect>
+<rect x="436" y="122" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>commerce--meta (GRADUATED)</title></rect>
+<rect x="452" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>card-trade-social (ARCHIVED)</title></rect>
+<rect x="468" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>hokage-chess (ARCHIVED)</title></rect>
+<rect x="484" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>anon-hookup-now (ARCHIVED)</title></rect>
+<rect x="500" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>render-second-amendment (ARCHIVED)</title></rect>
+<rect x="516" y="122" width="14" height="14" fill="#1f2937" rx="2" opacity="0.85"><title>select-or-left-or-right-or (ARCHIVED)</title></rect>
+<rect x="532" y="122" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>peer-audited--behavioral-blockchain (GRADUATED)</title></rect>
+<rect x="548" y="122" width="14" height="14" fill="#374151" rx="2" opacity="0.85"><title>styx-behavioral-commerce (LOCAL)</title></rect>
+<text x="92.0" y="156.0" class="stat" text-anchor="end" fill="#6b7280">Taxis (11)</text>
+<rect x="100" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>orchestration-start-here (GRADUATED)</title></rect>
+<rect x="116" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>petasum-super-petasum (GRADUATED)</title></rect>
+<rect x="132" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>universal-node-network (GRADUATED)</title></rect>
+<rect x="148" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<rect x="164" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>agentic-titan (GRADUATED)</title></rect>
+<rect x="180" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>agent--claude-smith (GRADUATED)</title></rect>
+<rect x="196" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>a-i--skills (GRADUATED)</title></rect>
+<rect x="212" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>tool-interaction-design (GRADUATED)</title></rect>
+<rect x="228" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>system-governance-framework (GRADUATED)</title></rect>
+<rect x="244" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>reverse-engine-recursive-run (GRADUATED)</title></rect>
+<rect x="260" y="146" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>collective-persona-operations (GRADUATED)</title></rect>
+<text x="92.0" y="180.0" class="stat" text-anchor="end" fill="#6b7280">Logos (2)</text>
+<rect x="100" y="170" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>public-process (GRADUATED)</title></rect>
+<rect x="116" y="170" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<text x="92.0" y="204.0" class="stat" text-anchor="end" fill="#6b7280">Koinonia (6)</text>
+<rect x="100" y="194" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>koinonia-db (GRADUATED)</title></rect>
+<rect x="116" y="194" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>community-hub (GRADUATED)</title></rect>
+<rect x="132" y="194" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>salon-archive (GRADUATED)</title></rect>
+<rect x="148" y="194" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>reading-group-curriculum (GRADUATED)</title></rect>
+<rect x="164" y="194" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>adaptive-personal-syllabus (GRADUATED)</title></rect>
+<rect x="180" y="194" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<text x="92.0" y="228.0" class="stat" text-anchor="end" fill="#6b7280">Kerygma (4)</text>
+<rect x="100" y="218" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>announcement-templates (GRADUATED)</title></rect>
+<rect x="116" y="218" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>social-automation (GRADUATED)</title></rect>
+<rect x="132" y="218" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>distribution-strategy (GRADUATED)</title></rect>
+<rect x="148" y="218" width="14" height="14" fill="#e94560" rx="2" opacity="0.85"><title>.github (GRADUATED)</title></rect>
+<rect x="20" y="372" width="8" height="8" fill="#e94560" rx="1"/>
+<text x="32" y="380" class="stat" fill="#d4d4d8" font-size="8">GRADUATED</text>
+<rect x="104" y="372" width="8" height="8" fill="#4ade80" rx="1"/>
+<text x="116" y="380" class="stat" fill="#d4d4d8" font-size="8">PUBLIC_PROCESS</text>
+<rect x="218" y="372" width="8" height="8" fill="#60a5fa" rx="1"/>
+<text x="230" y="380" class="stat" fill="#d4d4d8" font-size="8">CANDIDATE</text>
+<rect x="302" y="372" width="8" height="8" fill="#374151" rx="1"/>
+<text x="314" y="380" class="stat" fill="#d4d4d8" font-size="8">LOCAL</text>
+<rect x="362" y="372" width="8" height="8" fill="#1f2937" rx="1"/>
+<text x="374" y="380" class="stat" fill="#d4d4d8" font-size="8">ARCHIVED</text>
+</svg>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" width="900" height="400">
+<title>ORGANVM — Dependency Flow</title>
+<style>
+  text { font-family: "SF Mono", "Fira Code", monospace; }
+  .label { font-size: 11px; fill: currentColor; }
+  .title { font-size: 14px; font-weight: 600; fill: currentColor; }
+  .stat { font-size: 10px; fill: currentColor; opacity: 0.7; }
+  .big { font-size: 28px; font-weight: 700; fill: currentColor; }
+</style>
+
+<rect width="900" height="400" fill="#0f0f23"/>
+<defs><marker id="dep-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e94560" opacity="0.6"/></marker></defs>
+<text x="135.0" y="100.0" class="stat" text-anchor="middle" fill="#6b7280">Production Core</text>
+<text x="648.0" y="60.0" class="stat" text-anchor="middle" fill="#6b7280">Interface Layer</text>
+<text x="315.0" y="388.0" class="stat" text-anchor="middle" fill="#6b7280">Control Plane</text>
+<text x="450.0" y="30.0" class="stat" text-anchor="middle" fill="#6b7280">Constitutional Substrate</text>
+<line x1="163.0" y1="180.0" x2="283.0" y2="180.0" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="343.0" y1="180.0" x2="463.0" y2="180.0" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="293.4" y1="310.2" x2="159.7" y2="200.3" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="315.0" y1="300.0" x2="315.0" y2="212.0" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="336.6" y1="310.2" x2="470.3" y2="200.3" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="338.7" y1="313.2" x2="620.9" y2="137.0" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="341.1" y1="318.0" x2="618.1" y2="211.5" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="342.7" y1="324.0" x2="616.3" y2="284.6" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<line x1="437.4" y1="85.0" x2="329.4" y2="299.4" stroke="#6b7280" stroke-width="1.5" opacity="0.4" marker-end="url(#dep-arrow)"/>
+<circle cx="450.0" cy="60.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="450.0" cy="60.0" r="22.0" fill="#e94560" stroke="#e94560" stroke-width="1.2"/>
+<text x="450.0" y="56.0" class="label" text-anchor="middle" fill="#d4d4d8">Meta</text>
+<text x="450.0" y="70.0" class="stat" text-anchor="middle" fill="#6b7280">META</text>
+<circle cx="135.0" cy="180.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="135.0" cy="180.0" r="22.0" fill="#16213e" stroke="#e94560" stroke-width="1.2"/>
+<text x="135.0" y="176.0" class="label" text-anchor="middle" fill="#d4d4d8">Theoria</text>
+<text x="135.0" y="190.0" class="stat" text-anchor="middle" fill="#6b7280">I</text>
+<circle cx="315.0" cy="180.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="315.0" cy="180.0" r="22.0" fill="#16213e" stroke="#e94560" stroke-width="1.2"/>
+<text x="315.0" y="176.0" class="label" text-anchor="middle" fill="#d4d4d8">Poiesis</text>
+<text x="315.0" y="190.0" class="stat" text-anchor="middle" fill="#6b7280">II</text>
+<circle cx="495.0" cy="180.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="495.0" cy="180.0" r="22.0" fill="#16213e" stroke="#e94560" stroke-width="1.2"/>
+<text x="495.0" y="176.0" class="label" text-anchor="middle" fill="#d4d4d8">Ergon</text>
+<text x="495.0" y="190.0" class="stat" text-anchor="middle" fill="#6b7280">III</text>
+<circle cx="315.0" cy="328.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="315.0" cy="328.0" r="22.0" fill="#16213e" stroke="#e94560" stroke-width="1.2"/>
+<text x="315.0" y="324.0" class="label" text-anchor="middle" fill="#d4d4d8">Taxis</text>
+<text x="315.0" y="338.0" class="stat" text-anchor="middle" fill="#6b7280">IV</text>
+<circle cx="648.0" cy="120.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="648.0" cy="120.0" r="22.0" fill="#16213e" stroke="#e94560" stroke-width="1.2"/>
+<text x="648.0" y="116.0" class="label" text-anchor="middle" fill="#d4d4d8">Logos</text>
+<text x="648.0" y="130.0" class="stat" text-anchor="middle" fill="#6b7280">V</text>
+<circle cx="648.0" cy="200.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="648.0" cy="200.0" r="22.0" fill="#16213e" stroke="#e94560" stroke-width="1.2"/>
+<text x="648.0" y="196.0" class="label" text-anchor="middle" fill="#d4d4d8">Koinonia</text>
+<text x="648.0" y="210.0" class="stat" text-anchor="middle" fill="#6b7280">VI</text>
+<circle cx="648.0" cy="280.0" r="26.0" fill="#e94560" opacity="0.06"/>
+<circle cx="648.0" cy="280.0" r="22.0" fill="#16213e" stroke="#e94560" stroke-width="1.2"/>
+<text x="648.0" y="276.0" class="label" text-anchor="middle" fill="#d4d4d8">Kerygma</text>
+<text x="648.0" y="290.0" class="stat" text-anchor="middle" fill="#6b7280">VII</text>
+</svg>
