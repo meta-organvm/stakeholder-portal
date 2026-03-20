@@ -173,7 +173,7 @@ Copy `.env.example` → `.env`. Key variable groups:
 ### Governance
 - *Standard ORGANVM governance applies*
 
-*Last synced: 2026-03-20T00:59:57Z*
+*Last synced: 2026-03-20T02:45:36Z*
 
 ## Session Review Protocol
 
@@ -293,30 +293,30 @@ Resolve: `organvm ontologia resolve stakeholder-portal` | History: `organvm onto
 
 | Variable | Value | Scope | Updated |
 |----------|-------|-------|---------|
-| `active_repos` | 1 | global | 2026-03-20 |
-| `archived_repos` | 0 | global | 2026-03-20 |
-| `ci_workflows` | 1 | global | 2026-03-20 |
-| `code_files` | 0 | global | 2026-03-20 |
-| `dependency_edges` | 0 | global | 2026-03-20 |
-| `operational_organs` | 1 | global | 2026-03-20 |
-| `published_essays` | 0 | global | 2026-03-20 |
-| `repos_with_tests` | 0 | global | 2026-03-20 |
-| `sprints_completed` | 0 | global | 2026-03-20 |
-| `test_files` | 0 | global | 2026-03-20 |
-| `total_organs` | 1 | global | 2026-03-20 |
-| `total_repos` | 1 | global | 2026-03-20 |
-| `total_words_formatted` | 0 | global | 2026-03-20 |
-| `total_words_numeric` | 0 | global | 2026-03-20 |
-| `total_words_short` | 0K+ | global | 2026-03-20 |
+| `active_repos` | 59 | global | 2026-03-20 |
+| `archived_repos` | 53 | global | 2026-03-20 |
+| `ci_workflows` | 104 | global | 2026-03-20 |
+| `code_files` | 22883 | global | 2026-03-20 |
+| `dependency_edges` | 50 | global | 2026-03-20 |
+| `operational_organs` | 8 | global | 2026-03-20 |
+| `published_essays` | 49 | global | 2026-03-20 |
+| `repos_with_tests` | 46 | global | 2026-03-20 |
+| `sprints_completed` | 33 | global | 2026-03-20 |
+| `test_files` | 4273 | global | 2026-03-20 |
+| `total_organs` | 8 | global | 2026-03-20 |
+| `total_repos` | 113 | global | 2026-03-20 |
+| `total_words_formatted` | 738,579 | global | 2026-03-20 |
+| `total_words_numeric` | 738579 | global | 2026-03-20 |
+| `total_words_short` | 739K+ | global | 2026-03-20 |
 
-Metrics: 9 registered | Observations: 5784 recorded
+Metrics: 9 registered | Observations: 5896 recorded
 Resolve: `organvm ontologia status` | Refresh: `organvm refresh`
 
 
 ## System Density (auto-generated)
 
-AMMOI: 58% | Edges: 28 | Tensions: 33 | Clusters: 5 | Adv: 3 | Events(24h): 8195
+AMMOI: 58% | Edges: 28 | Tensions: 33 | Clusters: 5 | Adv: 3 | Events(24h): 8261
 Structure: 8 organs / 113 repos / 1654 components (depth 17) | Inference: 98% | Organs: META-ORGANVM:70%, ORGAN-I:58%, ORGAN-II:48%, ORGAN-III:56% +4 more
-Last pulse: 2026-03-20T00:59:49 | Δ24h: n/a | Δ7d: n/a
+Last pulse: 2026-03-20T02:45:28 | Δ24h: n/a | Δ7d: n/a
 
 <!-- ORGANVM:AUTO:END -->

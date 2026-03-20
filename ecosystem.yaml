@@ -1,0 +1,25 @@
+schema_version: '1.0'
+repo: stakeholder-portal
+organ: META
+display_name: "Hermeneus — Public intelligence portal with natural language queries over 111 repos"
+
+delivery:
+- platform: web_app
+  status: in_progress
+  priority: high
+  notes: "Next.js + Groq + OSS LLM API for stakeholder intelligence"
+  next_action: "Complete natural language query interface"
+
+content:
+- platform: docs_site
+  status: not_started
+  priority: medium
+  notes: "Portal usage guide, query examples, data source documentation"
+  next_action: "Write user guide for stakeholder queries"
+
+community:
+- platform: web_portal
+  status: planned
+  priority: high
+  notes: "Public-facing intelligence portal for external stakeholders"
+  next_action: "Design public access and authentication model"
