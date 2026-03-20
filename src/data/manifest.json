@@ -3,7 +3,7 @@
   "system": {
     "name": "ORGANVM",
     "tagline": "Eight-organ creative-institutional system",
-    "total_repos": 92,
+    "total_repos": 113,
     "total_organs": 8,
     "launch_date": "2026-02-11",
     "sprints_completed": 33,
@@ -42,10 +42,10 @@
       "32-sensoria",
       "33-operatio"
     ],
-    "ci_workflows": 87,
-    "dependency_edges": 40,
-    "published_essays": 48,
-    "active_repos": 48,
+    "ci_workflows": 104,
+    "dependency_edges": 50,
+    "published_essays": 49,
+    "active_repos": 59,
     "archived_repos": 44
   },
   "organs": [
