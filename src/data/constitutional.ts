@@ -59,6 +59,24 @@ export interface ConstitutionalMetrics {
   axiomsMissing: number;
 }
 
+export interface TracedModule {
+  path: string;
+  spec: string;
+  layer: string;
+}
+
+export interface BibliographyTradition {
+  name: string;
+  count: number;
+  specs: string[];
+}
+
+export interface Preprint {
+  title: string;
+  doi: string;
+  date: string;
+}
+
 // ---------------------------------------------------------------------------
 // Axioms (from SPEC-000/inventory.md)
 // ---------------------------------------------------------------------------
@@ -634,6 +652,113 @@ export const SPECS: SpecEntry[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Traced Modules (28 engine modules mapped to specs)
+// ---------------------------------------------------------------------------
+
+export const TRACED_MODULES: TracedModule[] = [
+  { path: "events/spine.py", spec: "INST-EVENT-SPINE", layer: "L4A" },
+  { path: "governance/state_machine.py", spec: "SPEC-004", layer: "L2" },
+  { path: "ontology/taxonomy.py", spec: "SPEC-001", layer: "L1" },
+  { path: "governance/sanctions.py", spec: "SPEC-005", layer: "L2" },
+  { path: "governance/invariants.py", spec: "SPEC-003", layer: "L2" },
+  { path: "metrics/indices.py", spec: "INST-GRAPH-INDICES", layer: "L4B" },
+  { path: "organ_config.py", spec: "SPEC-006", layer: "L3A" },
+  { path: "ontology/capabilities.py", spec: "SPEC-002", layer: "L1" },
+  { path: "seed/contracts.py", spec: "SPEC-007", layer: "L3A" },
+  { path: "governance/evolution.py", spec: "SPEC-008", layer: "L3A" },
+  { path: "governance/conformance.py", spec: "SPEC-004", layer: "L2" },
+  { path: "governance/interrogation.py", spec: "SPEC-009", layer: "L4B" },
+  { path: "omega/phases.py", spec: "SPEC-010", layer: "L4B" },
+  { path: "governance/meta_evolution.py", spec: "SPEC-011", layer: "L4B" },
+  { path: "governance/formations.py", spec: "INST-FORMATION", layer: "L3B" },
+  { path: "governance/functional_taxonomy.py", spec: "INST-TAXONOMY", layer: "L3B" },
+  { path: "governance/eras.py", spec: "INST-ERA", layer: "L3B" },
+  { path: "metrics/heartbeat.py", spec: "INST-HEARTBEAT", layer: "L4A" },
+  { path: "metrics/temporal.py", spec: "INST-TEMPORAL-METRICS", layer: "L4A" },
+  { path: "governance/authority.py", spec: "SPEC-017", layer: "L5" },
+  { path: "governance/fusion.py", spec: "SPEC-012", layer: "L3B" },
+  { path: "ontology/relations.py", spec: "SPEC-002", layer: "L1" },
+  { path: "coordination/claims.py", spec: "SPEC-013", layer: "L5" },
+  { path: "coordination/tool_lock.py", spec: "SPEC-014", layer: "L5" },
+  { path: "session/debrief.py", spec: "SPEC-015", layer: "L5" },
+  { path: "contextmd/generator.py", spec: "SPEC-016", layer: "L5" },
+  { path: "governance/rules.py", spec: "SPEC-003", layer: "L2" },
+  { path: "governance/lineage.py", spec: "SPEC-000", layer: "L1" },
+];
+
+// ---------------------------------------------------------------------------
+// Bibliography Traditions (130 BibTeX entries across 13 traditions)
+// ---------------------------------------------------------------------------
+
+export const BIBLIOGRAPHY_TRADITIONS: BibliographyTradition[] = [
+  { name: "Autopoiesis", count: 11, specs: ["SPEC-000"] },
+  { name: "Cybernetics & VSM", count: 8, specs: ["SPEC-000"] },
+  { name: "Institutional Design", count: 7, specs: ["SPEC-000", "SPEC-005"] },
+  { name: "Formal Ontology", count: 11, specs: ["SPEC-001"] },
+  { name: "Mereology & Type Theory", count: 8, specs: ["SPEC-002"] },
+  { name: "Formal Verification", count: 9, specs: ["SPEC-003"] },
+  { name: "Statecharts & Process", count: 6, specs: ["SPEC-004"] },
+  { name: "Production Rules", count: 5, specs: ["SPEC-005"] },
+  { name: "Modularity & Architecture", count: 12, specs: ["SPEC-006", "SPEC-007", "SPEC-008"] },
+  {
+    name: "Organizational Theory",
+    count: 11,
+    specs: ["SPEC-012", "INST-FORMATION", "INST-TAXONOMY", "INST-ERA"],
+  },
+  { name: "Systems Dynamics & Sensing", count: 17, specs: ["L4A", "L4B"] },
+  {
+    name: "Multi-Agent & Security",
+    count: 16,
+    specs: ["SPEC-013", "SPEC-014", "SPEC-015", "SPEC-016", "SPEC-017"],
+  },
+  { name: "Supplementary (ANT, Field Theory, etc.)", count: 9, specs: ["SPEC-000"] },
+];
+
+// ---------------------------------------------------------------------------
+// Author / Preprints
+// ---------------------------------------------------------------------------
+
+export const AUTHOR_ORCID = "0009-0008-2007-3596";
+
+export const PREPRINTS: Preprint[] = [
+  {
+    title: "SPEC-000: System Manifesto — Axiomatic Foundations for a Self-Governing Software Organism",
+    doi: "10.5281/zenodo.15055654",
+    date: "2026-03-18",
+  },
+  {
+    title: "SPEC-001: Ontology Charter — Formal Category System for ORGANVM Entities",
+    doi: "10.5281/zenodo.15061492",
+    date: "2026-03-18",
+  },
+  {
+    title: "SPEC-002: Primitive Register — Mereological Type System and Relation Algebra",
+    doi: "10.5281/zenodo.15061520",
+    date: "2026-03-18",
+  },
+  {
+    title: "SPEC-003: Invariant Register — Formal Constraints and Verification Obligations",
+    doi: "10.5281/zenodo.15066350",
+    date: "2026-03-19",
+  },
+  {
+    title: "SPEC-004: Logical Specification — Statechart Semantics and Transition Calculus",
+    doi: "10.5281/zenodo.15066452",
+    date: "2026-03-19",
+  },
+  {
+    title: "SPEC-005: Rulebook — Production Rule System and Sanction Algebra",
+    doi: "10.5281/zenodo.15066474",
+    date: "2026-03-19",
+  },
+  {
+    title: "Constitutional Software Engineering: Building Self-Governing Systems from Formal Foundations",
+    doi: "10.5281/zenodo.15055654",
+    date: "2026-03-18",
+  },
+];
+
+// ---------------------------------------------------------------------------
 // Accessor functions
 // ---------------------------------------------------------------------------
 
@@ -684,4 +809,24 @@ export function getMetrics(): ConstitutionalMetrics {
     axiomsConflict: conflict,
     axiomsMissing: missing,
   };
+}
+
+export function getTracedModules(): TracedModule[] {
+  return TRACED_MODULES;
+}
+
+export function getTracedModulesByLayer(layer: string): TracedModule[] {
+  return TRACED_MODULES.filter((m) => m.layer === layer);
+}
+
+export function getBibliographyTraditions(): BibliographyTradition[] {
+  return BIBLIOGRAPHY_TRADITIONS;
+}
+
+export function getPreprints(): Preprint[] {
+  return PREPRINTS;
+}
+
+export function getAuthorOrcid(): string {
+  return AUTHOR_ORCID;
 }
