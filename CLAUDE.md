@@ -168,12 +168,12 @@ Copy `.env.example` → `.env`. Key variable groups:
 - **Consumes** ← `organvm-engine`: organvm-engine
 
 ### Siblings in Meta
-`.github`, `organvm-corpvs-testamentvm`, `alchemia-ingestvm`, `schema-definitions`, `organvm-engine`, `system-dashboard`, `organvm-mcp-server`, `praxis-perpetua`, `materia-collider`, `organvm-ontologia`
+`.github`, `organvm-corpvs-testamentvm`, `alchemia-ingestvm`, `schema-definitions`, `organvm-engine`, `system-dashboard`, `organvm-mcp-server`, `praxis-perpetua`, `materia-collider`, `organvm-ontologia`, `vigiles-aeternae--agon-cosmogonicum`
 
 ### Governance
 - *Standard ORGANVM governance applies*
 
-*Last synced: 2026-03-20T02:45:36Z*
+*Last synced: 2026-03-20T10:58:36Z*
 
 ## Session Review Protocol
 
@@ -221,6 +221,7 @@ Transcripts are on-demand (never committed):
 | system | any | market-gap-analysis | SOP: Full-Breath Market-Gap Analysis & Defensive Parrying |
 | system | any | mcp-server-fleet-management | SOP: MCP Server Fleet Management (The Server Protocol) |
 | system | any | multi-agent-swarm-orchestration | SOP: Multi-Agent Swarm Orchestration (The Polymorphic Swarm) |
+| system | any | network-testament-protocol | SOP: Network Testament Protocol (The Mirror Protocol) |
 | system | any | open-source-licensing-and-ip | SOP: Open Source Licensing and IP (The Commons Protocol) |
 | system | any | performance-interface-design | SOP: Performance Interface Design (The Stage Protocol) |
 | system | any | pitch-deck-rollout | SOP: Pitch Deck Generation & Rollout |
@@ -237,6 +238,7 @@ Transcripts are on-demand (never committed):
 | system | any | strategic-foresight-and-futures | SOP: Strategic Foresight & Futures (The Telescope) |
 | system | any | styx-pipeline-traversal | SOP: Styx Pipeline Traversal (The 7-Organ Transmutation) |
 | system | any | system-dashboard-telemetry | SOP: System Dashboard Telemetry (The Panopticon Protocol) |
+| system | any | the-descent-protocol | the-descent-protocol |
 | system | any | the-membrane-protocol | the-membrane-protocol |
 | system | any | theoretical-concept-versioning | SOP: Theoretical Concept Versioning (The Epistemic Protocol) |
 | system | any | theory-to-concrete-gate | theory-to-concrete-gate |
@@ -248,7 +250,7 @@ Transcripts are on-demand (never committed):
 | unknown | any | ira-grade-norming | ira-grade-norming |
 | unknown | any | pitch-deck-rollout | SOP: Pitch Deck Generation & Rollout |
 
-Linked skills: continuous-learning-agent, cross-agent-handoff, evaluation-to-growth, genesis-dna, multi-agent-workforce-planner, promotion-and-state-transitions, session-self-critique
+Linked skills: cicd-resilience-and-recovery, continuous-learning-agent, cross-agent-handoff, evaluation-to-growth, genesis-dna, multi-agent-workforce-planner, promotion-and-state-transitions, quality-gate-baseline-calibration, repo-onboarding-and-habitat-creation, session-self-critique, structural-integrity-audit
 
 
 **Prompting (Anthropic)**: context 200K tokens, format: XML tags, thinking: extended thinking (budget_tokens)
@@ -293,30 +295,30 @@ Resolve: `organvm ontologia resolve stakeholder-portal` | History: `organvm onto
 
 | Variable | Value | Scope | Updated |
 |----------|-------|-------|---------|
-| `active_repos` | 59 | global | 2026-03-20 |
-| `archived_repos` | 53 | global | 2026-03-20 |
-| `ci_workflows` | 104 | global | 2026-03-20 |
-| `code_files` | 22883 | global | 2026-03-20 |
-| `dependency_edges` | 50 | global | 2026-03-20 |
-| `operational_organs` | 8 | global | 2026-03-20 |
-| `published_essays` | 49 | global | 2026-03-20 |
-| `repos_with_tests` | 46 | global | 2026-03-20 |
-| `sprints_completed` | 33 | global | 2026-03-20 |
-| `test_files` | 4273 | global | 2026-03-20 |
-| `total_organs` | 8 | global | 2026-03-20 |
-| `total_repos` | 113 | global | 2026-03-20 |
-| `total_words_formatted` | 738,579 | global | 2026-03-20 |
-| `total_words_numeric` | 738579 | global | 2026-03-20 |
-| `total_words_short` | 739K+ | global | 2026-03-20 |
+| `active_repos` | 1 | global | 2026-03-20 |
+| `archived_repos` | 0 | global | 2026-03-20 |
+| `ci_workflows` | 1 | global | 2026-03-20 |
+| `code_files` | 0 | global | 2026-03-20 |
+| `dependency_edges` | 0 | global | 2026-03-20 |
+| `operational_organs` | 1 | global | 2026-03-20 |
+| `published_essays` | 0 | global | 2026-03-20 |
+| `repos_with_tests` | 0 | global | 2026-03-20 |
+| `sprints_completed` | 0 | global | 2026-03-20 |
+| `test_files` | 0 | global | 2026-03-20 |
+| `total_organs` | 1 | global | 2026-03-20 |
+| `total_repos` | 1 | global | 2026-03-20 |
+| `total_words_formatted` | 0 | global | 2026-03-20 |
+| `total_words_numeric` | 0 | global | 2026-03-20 |
+| `total_words_short` | 0K+ | global | 2026-03-20 |
 
-Metrics: 9 registered | Observations: 5896 recorded
+Metrics: 9 registered | Observations: 7184 recorded
 Resolve: `organvm ontologia status` | Refresh: `organvm refresh`
 
 
 ## System Density (auto-generated)
 
-AMMOI: 58% | Edges: 28 | Tensions: 33 | Clusters: 5 | Adv: 3 | Events(24h): 8261
-Structure: 8 organs / 113 repos / 1654 components (depth 17) | Inference: 98% | Organs: META-ORGANVM:70%, ORGAN-I:58%, ORGAN-II:48%, ORGAN-III:56% +4 more
-Last pulse: 2026-03-20T02:45:28 | Δ24h: n/a | Δ7d: n/a
+AMMOI: 54% | Edges: 28 | Tensions: 33 | Clusters: 5 | Adv: 3 | Events(24h): 12929
+Structure: 8 organs / 117 repos / 1654 components (depth 17) | Inference: 98% | Organs: META-ORGANVM:66%, ORGAN-I:55%, ORGAN-II:47%, ORGAN-III:56% +4 more
+Last pulse: 2026-03-20T10:58:23 | Δ24h: -3.7% | Δ7d: n/a
 
 <!-- ORGANVM:AUTO:END -->
