@@ -53,7 +53,7 @@ jobs:
 
       - name: Upload maintenance scorecard artifact
         if: steps.db-check.outputs.skip != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: maintenance-scorecards
           path: .codex/telemetry/maintenance-scorecards.ndjson
