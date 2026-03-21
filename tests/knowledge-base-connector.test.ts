@@ -5,15 +5,18 @@ const fetchMock = vi.fn();
 beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
   fetchMock.mockReset();
-  // Reset module env
+  // Reset module env — NONPUBLIC_FACETS_ENABLED must be set before module import
+  // because public-exposure-policy.ts reads it at module load time
   delete process.env.MY_KNOWLEDGE_BASE_ENABLED;
   delete process.env.MY_KNOWLEDGE_BASE_API_URL;
   delete process.env.MY_KNOWLEDGE_BASE_UI_URL;
+  process.env.NONPUBLIC_FACETS_ENABLED = "true";
 });
 
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.resetModules();
+  delete process.env.NONPUBLIC_FACETS_ENABLED;
 });
 
 describe("fetchFederatedKnowledge", () => {

@@ -302,9 +302,17 @@ export function runInference(): number {
 // ---------------------------------------------------------------------------
 
 function detectPlatform(url: string): string {
-  if (url.includes("vercel.app") || url.includes("vercel.com")) return "vercel";
-  if (url.includes("netlify.app") || url.includes("netlify.com")) return "netlify";
-  if (url.includes("cloudflare") || url.includes("pages.dev")) return "cloudflare";
-  if (url.includes("github.io")) return "github-pages";
+  try {
+    const { hostname } = new URL(url);
+    if (hostname === "vercel.app" || hostname.endsWith(".vercel.app") ||
+        hostname === "vercel.com" || hostname.endsWith(".vercel.com")) return "vercel";
+    if (hostname === "netlify.app" || hostname.endsWith(".netlify.app") ||
+        hostname === "netlify.com" || hostname.endsWith(".netlify.com")) return "netlify";
+    if (hostname === "pages.dev" || hostname.endsWith(".pages.dev") ||
+        hostname.endsWith(".cloudflare.com")) return "cloudflare";
+    if (hostname.endsWith(".github.io")) return "github-pages";
+  } catch {
+    // Malformed URL — fall through to custom
+  }
   return "custom";
 }

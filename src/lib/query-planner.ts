@@ -332,8 +332,9 @@ export function planQuery(query: string): QueryPlan {
 
 function decomposeQuery(query: string): string[] {
   // Split on conjunctions and question separators
+  // Note: both sides use \s+ (not \s*) to prevent polynomial backtracking (ReDoS)
   const parts = query
-    .split(/\s*(?:and also|and then|and|also|additionally|plus)\s+/i)
+    .split(/\s+(?:and also|and then|and|also|additionally|plus)\s+/i)
     .filter((p) => p.trim().length > 5);
 
   if (parts.length <= 1) return [];

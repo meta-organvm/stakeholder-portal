@@ -26,8 +26,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check database availability
+        id: db-check
+        run: |
+          if [ -z "${{ secrets.DATABASE_URL }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::DATABASE_URL not configured — skipping maintenance cycle"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run maintenance cycle
+        if: steps.db-check.outputs.skip != 'true'
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           MAINTENANCE_CONNECTORS: ${{ vars.MAINTENANCE_CONNECTORS }}
           MAINTENANCE_SCORECARD_PATH: .codex/telemetry/maintenance-scorecards.ndjson
           ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
@@ -40,6 +52,7 @@ jobs:
           npm run maintenance:run -- --incremental --connectors "$CONNECTORS"
 
       - name: Upload maintenance scorecard artifact
+        if: steps.db-check.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: maintenance-scorecards
