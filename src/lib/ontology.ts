@@ -2,7 +2,7 @@
  * ORGANVM Domain Ontology v1
  *
  * Defines the entity classes, relationship types, and attribute schemas
- * for the stakeholder intelligence knowledge graph.
+ * for the Hermeneus knowledge graph.
  *
  * Schema version: 1.0.0
  * Migration path: additive-only until v2.

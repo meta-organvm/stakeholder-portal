@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-**Hermeneus** — ORGANVM Stakeholder Intelligence Portal. A Next.js 15 intelligence layer with full contextual awareness of every repo across the eight-organ system. Features natural language chat (OSS/free LLM), hybrid vector+lexical retrieval, a Postgres-backed operational control plane, and admin dashboard with GitHub SSO.
+**Hermeneus** (ἑρμηνεύς — the interpreter) — ORGANVM intelligence layer. A Next.js 16 system with full contextual awareness of every repo across the eight-organ system. Features natural language chat (Groq/OSS LLM with provider cascade), hybrid vector+lexical retrieval, a Postgres-backed operational control plane, and admin dashboard with GitHub SSO.
 
 ## Build & Dev Commands
 
