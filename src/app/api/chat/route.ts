@@ -252,40 +252,35 @@ function trackChatPath(path: string, startedAtMs: number): void {
 
 function buildOfflineResponse(
   queryText: string,
-  tier1: string,
-  tier2: string,
-  reason?: string
+  _tier1: string,
+  _tier2: string,
+  reason?: string,
+  sources?: Array<{ name: string; display_name: string; relevance: number; freshness: number; snippet: string; url?: string | null; source_type?: string }>
 ): string {
   const query = queryText.trim() || "the ORGANVM system";
-  const systemLines = tier1
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .slice(0, 7);
-  const relevantRepos = tier2
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l.startsWith("- **"))
-    .slice(0, 8);
+  if (reason) console.warn("[chat] offline fallback:", reason);
 
-  const repoSection =
-    relevantRepos.length > 0
-      ? relevantRepos.join("\n")
-      : "No ranked repository matches were found in the local manifest snapshot.";
+  const lines: string[] = [
+    `### Unable to Reach AI Model`,
+    `I could not reach the language model to synthesize an answer for **${query}**. Here is what I found in the knowledge base:`,
+  ];
 
-  return [
-    `### ORGANVM Snapshot Response`,
-    `The live OSS model path is currently unavailable, so this answer is generated from local manifest context for **${query}**.`,
-    "",
-    "#### System Overview",
-    ...systemLines.map((line) => `- ${line}`),
-    "",
-    "#### Relevant Repositories",
-    repoSection,
-    "",
-    reason ? void console.warn("[chat] offline fallback:", reason) : null,
-    "The AI assistant is temporarily unavailable. This response was generated from the cached system snapshot only.",
-  ].join("\n");
+  if (sources && sources.length > 0) {
+    lines.push("", "#### Retrieved Evidence");
+    for (const src of sources.slice(0, 8)) {
+      const relevancePct = Math.round(src.relevance * 100);
+      const freshnessLabel = src.freshness >= 0.8 ? "fresh" : src.freshness >= 0.5 ? "recent" : "aged";
+      const snippet = src.snippet.length > 250 ? src.snippet.slice(0, 250) + "..." : src.snippet;
+      const link = src.url ? ` [source](${src.url})` : "";
+      lines.push(`- **${src.display_name}** (${relevancePct}% relevant, ${freshnessLabel})${link}`);
+      lines.push(`  > ${snippet}`);
+    }
+    lines.push("", "*These sources were retrieved successfully before the model failure. You can retry for a synthesized answer.*");
+  } else {
+    lines.push("", "No relevant sources were retrieved for this query.");
+  }
+
+  return lines.join("\n");
 }
 
 type OpenAICompatibleMessage = {
@@ -339,15 +334,27 @@ function extractProviderText(data: OpenAICompatibleResponse): string | null {
   return null;
 }
 
+type ModelResponse =
+  | { mode: "buffered"; text: string; providerName: string }
+  | { mode: "streaming"; stream: ReadableStream<Uint8Array>; providerName: string };
+
+/**
+ * Issue #3: Scale timeout by query complexity.
+ * Issue #5: Request with stream:true. If provider returns SSE, stream it.
+ *           If provider returns JSON (no SSE support), parse it as buffered.
+ *           Single fetch call — no double-request.
+ */
 async function generateModelResponse(
   messages: ChatMessage[],
   systemPrompt: string,
-  modelConfig?: { temperature?: number; max_tokens?: number }
-): Promise<{ text: string; providerName: string }> {
+  modelConfig?: { temperature?: number; max_tokens?: number },
+  estimatedCost?: number
+): Promise<ModelResponse> {
   const provider = getProviderConfig();
 
+  const timeoutMs = Math.min(60_000, 15_000 + (estimatedCost ?? 5) * 3_000);
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 20_000);
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await withTimingAsync(
@@ -361,7 +368,7 @@ async function generateModelResponse(
           },
           body: JSON.stringify({
             model: provider.model,
-            stream: false,
+            stream: true,
             temperature: modelConfig?.temperature ?? 0.2,
             max_tokens: modelConfig?.max_tokens ?? 1200,
             messages: [{ role: "system", content: systemPrompt }, ...messages],
@@ -380,11 +387,64 @@ async function generateModelResponse(
       throw new Error(`${provider.providerName} HTTP ${response.status}: ${errorBody}`);
     }
 
+    // Check if provider returned SSE stream or buffered JSON
+    const contentType = response.headers.get("content-type") || "";
+    const isSSE = contentType.includes("text/event-stream") || contentType.includes("text/plain");
+
+    if (isSSE && response.body) {
+      // Stream path: forward SSE deltas as our own SSE chunks
+      const encoder = new TextEncoder();
+      const decoder = new TextDecoder();
+      const reader = response.body.getReader();
+
+      const readable = new ReadableStream<Uint8Array>({
+        async pull(streamController) {
+          try {
+            const { done, value } = await reader.read();
+            if (done) {
+              clearTimeout(timeoutId);
+              incrementCounter("chat.provider_success_total", 1, { provider: provider.providerName });
+              streamController.close();
+              return;
+            }
+            const chunk = decoder.decode(value, { stream: true });
+            for (const line of chunk.split("\n")) {
+              if (!line.startsWith("data: ")) continue;
+              const payload = line.slice(6).trim();
+              if (payload === "[DONE]") continue;
+              try {
+                const parsed = JSON.parse(payload) as {
+                  choices?: Array<{ delta?: { content?: string } }>;
+                };
+                const content = parsed.choices?.[0]?.delta?.content;
+                if (content) {
+                  streamController.enqueue(
+                    encoder.encode(`data: ${JSON.stringify({ text: content })}\n\n`)
+                  );
+                }
+              } catch { /* skip malformed SSE chunks */ }
+            }
+          } catch (err) {
+            clearTimeout(timeoutId);
+            streamController.error(err);
+          }
+        },
+        cancel() {
+          clearTimeout(timeoutId);
+          controller.abort();
+          reader.cancel().catch(() => {});
+        },
+      });
+
+      return { mode: "streaming", stream: readable, providerName: provider.providerName };
+    }
+
+    // Buffered path: parse JSON response
     const data = (await response.json()) as OpenAICompatibleResponse;
     const text = extractProviderText(data);
     if (text) {
       incrementCounter("chat.provider_success_total", 1, { provider: provider.providerName });
-      return { text, providerName: provider.providerName };
+      return { mode: "buffered", text, providerName: provider.providerName };
     }
     if (data.error?.message) throw new Error(data.error.message);
     throw new Error("OSS provider returned no assistant text.");
@@ -689,9 +749,14 @@ export async function POST(request: Request) {
     }
   }
 
-  // Hybrid retrieval with citations
+  // Hybrid retrieval — scope source count by strategy (issue #6: prompt size reduction)
+  const narrowStrategies = new Set(["single_repo", "file_access", "deterministic"]);
+  const maxSources = queryPlan.strategy === "meta_vision" ? 15
+    : narrowStrategies.has(queryPlan.strategy) ? 5
+    : queryPlan.strategy === "organ_scope" ? 8
+    : 10;
   const retrieval = await hybridRetrieve(sanitizedQuery, {
-    maxSources: queryPlan.strategy === "single_repo" ? 5 : queryPlan.strategy === "meta_vision" ? 20 : 15,
+    maxSources,
     includeGraph: queryPlan.strategy === "graph_traversal" || queryPlan.strategy === "cross_organ",
     boostVision: queryPlan.strategy === "meta_vision",
     queryStrategy: queryPlan.strategy,
@@ -711,9 +776,11 @@ export async function POST(request: Request) {
         `\nMention these as possible matches if the user may be referring to one of them.`;
     }
   }
+  // Issue #6: omit tier1 system overview for narrow queries to save ~500 tokens
+  const includeTier1 = !narrowStrategies.has(queryPlan.strategy);
   const systemPrompt = persona.buildSystemPrompt({
     citationInstructions,
-    tier1: retrieval.tier1,
+    tier1: includeTier1 ? retrieval.tier1 : "",
     context: retrieval.context,
     closestMatchHint,
     totalRepos: manifest.system.total_repos,
@@ -723,17 +790,64 @@ export async function POST(request: Request) {
   });
 
   try {
-    const providerResponse = await generateModelResponse(messages, systemPrompt, persona.modelConfig);
+    const providerResponse = await generateModelResponse(messages, systemPrompt, persona.modelConfig, queryPlan.estimated_cost);
+    const retrievalDiag = {
+      strategy: retrieval.strategy,
+      source_count: retrieval.sources.length,
+      total_candidates: retrieval.total_candidates,
+    };
+
+    // Issue #5: If provider returned SSE stream, forward it with citation meta appended
+    if (providerResponse.mode === "streaming") {
+      trackChatPath("hybrid_retrieval", requestStartedAtMs);
+      const encoder = new TextEncoder();
+      const metaChunk = JSON.stringify({
+        citations: citations.map((c) => ({
+          id: c.id, source_name: c.source_name, source_type: c.source_type,
+          url: c.url, relevance: c.relevance, freshness_label: c.freshness_label, snippet: c.snippet,
+        })),
+        confidence_score: citations.length > 0 ? citations.reduce((s, c) => s + c.relevance, 0) / citations.length : 0,
+        citation_coverage: hasStrongSources ? 0.7 : 0.3,
+        strategy: retrieval.strategy,
+        suggestions: queryPlan.suggested_followups,
+        answerability: queryPlan.answerability,
+        answerability_reason: queryPlan.answerability_reason,
+        diagnostics: buildDiagnostics(queryPlan, "hybrid_retrieval", {
+          retrieval: retrievalDiag,
+          provider: { name: providerResponse.providerName, status: "success" },
+        }, personaId),
+      });
+
+      const composedStream = new ReadableStream<Uint8Array>({
+        async start(controller) {
+          const reader = providerResponse.stream.getReader();
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              controller.enqueue(value);
+            }
+          } catch (streamErr) {
+            const errMsg = streamErr instanceof Error ? streamErr.message : "Stream error";
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: errMsg })}\n\n`));
+          }
+          controller.enqueue(encoder.encode(`data: ${metaChunk}\n\n`));
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        },
+      });
+
+      return new Response(composedStream, {
+        headers: { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", Connection: "keep-alive" },
+      });
+    }
+
+    // Buffered path: process as before
     const responseText = providerResponse.text;
     const cited = buildCitedResponse(responseText, retrieval.sources);
 
-    // Graduated evidence gate:
-    // Block ONLY when zero retrieval sources AND truly unanswerable
-    if (
-      queryPlan.answerability === "unanswerable" &&
-      retrieval.sources.length === 0 &&
-      cited.has_unsupported_claims
-    ) {
+    // Graduated evidence gate
+    if (queryPlan.answerability === "unanswerable" && retrieval.sources.length === 0 && cited.has_unsupported_claims) {
       trackChatPath("insufficient_evidence", requestStartedAtMs);
       return createSseResponse(
         buildInsufficientEvidenceResponse(sanitizedQuery, queryPlan.answerability_reason),
@@ -746,18 +860,13 @@ export async function POST(request: Request) {
           answerability: queryPlan.answerability,
           answerability_reason: queryPlan.answerability_reason,
           diagnostics: buildDiagnostics(queryPlan, "insufficient_evidence", {
-            retrieval: {
-              strategy: retrieval.strategy,
-              source_count: retrieval.sources.length,
-              total_candidates: retrieval.total_candidates,
-            },
+            retrieval: retrievalDiag,
             provider: { name: providerResponse.providerName, status: "success" },
           }, personaId),
         }
       );
     }
 
-    // Append caveat when answerability is not full and claims are uncited
     let finalResponseText = responseText;
     if (queryPlan.answerability !== "answerable" && cited.has_unsupported_claims) {
       finalResponseText += "\n\n---\n*Note: Some claims in this response could not be verified against indexed sources. Treat unverified details with appropriate caution.*";
@@ -774,20 +883,15 @@ export async function POST(request: Request) {
         answerability: queryPlan.answerability,
         answerability_reason: queryPlan.answerability_reason,
         diagnostics: buildDiagnostics(queryPlan, "hybrid_retrieval", {
-          retrieval: {
-            strategy: retrieval.strategy,
-            source_count: retrieval.sources.length,
-            total_candidates: retrieval.total_candidates,
-          },
+          retrieval: retrievalDiag,
           provider: { name: providerResponse.providerName, status: "success" },
         }, personaId),
       }
     );
   } catch (error) {
-    const reason =
-      error instanceof Error ? error.message : "Unknown provider error";
+    const reason = error instanceof Error ? error.message : "Unknown provider error";
     trackChatPath("offline_fallback", requestStartedAtMs);
-    return createSseResponse(buildOfflineResponse(sanitizedQuery, tier1, tier2, reason), [], {
+    return createSseResponse(buildOfflineResponse(sanitizedQuery, tier1, tier2, reason, retrieval.sources), citations, {
       strategy: "offline_fallback",
       suggestions: queryPlan.suggested_followups,
       answerability: queryPlan.answerability,

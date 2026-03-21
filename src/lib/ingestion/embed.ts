@@ -16,38 +16,64 @@ import { splitFile } from "./code-splitter";
 // Embedding API call (HuggingFace or OpenAI-compatible)
 // ---------------------------------------------------------------------------
 
+const EMBEDDING_DELAY_MS = Number(process.env.EMBEDDING_DELAY_MS) || 0;
+const EMBEDDING_MAX_RETRIES = 3;
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Issue #7: fetchEmbedding with exponential backoff retry + configurable delay */
 export async function fetchEmbedding(text: string): Promise<number[]> {
   const apiUrl = process.env.EMBEDDING_API_URL || "https://api.openai.com/v1/embeddings";
   const apiKey = process.env.EMBEDDING_API_KEY; // allow-secret: env lookup only
   const model = process.env.EMBEDDING_MODEL || "text-embedding-3-small";
   const isHuggingFace = apiUrl.includes("huggingface.co") || apiUrl.includes("hf-inference");
 
-  const response = await fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
-    },
-    body: isHuggingFace
-      ? JSON.stringify({ inputs: text })
-      : JSON.stringify({ input: text, model }),
-  });
+  for (let attempt = 0; attempt < EMBEDDING_MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      const backoffMs = Math.min(1000 * Math.pow(2, attempt), 8000);
+      await sleep(backoffMs);
+    }
 
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Embedding API failed: ${response.status} ${err}`);
+    const response = await fetch(apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+      },
+      body: isHuggingFace
+        ? JSON.stringify({ inputs: text })
+        : JSON.stringify({ input: text, model }),
+    });
+
+    // Retry on 429 (rate limit) and 500+ (server error)
+    if ((response.status === 429 || response.status >= 500) && attempt < EMBEDDING_MAX_RETRIES - 1) {
+      console.warn(`[embed] Retryable error ${response.status}, attempt ${attempt + 1}/${EMBEDDING_MAX_RETRIES}`);
+      continue;
+    }
+
+    if (!response.ok) {
+      const err = await response.text();
+      throw new Error(`Embedding API failed: ${response.status} ${err}`);
+    }
+
+    const data = await response.json();
+
+    // Throttle between successful calls if configured
+    if (EMBEDDING_DELAY_MS > 0) await sleep(EMBEDDING_DELAY_MS);
+
+    if (isHuggingFace) {
+      return Array.isArray(data[0]) ? data[0] : data;
+    }
+
+    if (!data?.data?.[0]?.embedding) {
+      throw new Error("Invalid format returned by embedding API.");
+    }
+    return data.data[0].embedding;
   }
 
-  const data = await response.json();
-
-  if (isHuggingFace) {
-    return Array.isArray(data[0]) ? data[0] : data;
-  }
-
-  if (!data?.data?.[0]?.embedding) {
-    throw new Error("Invalid format returned by embedding API.");
-  }
-  return data.data[0].embedding;
+  throw new Error(`Embedding API failed after ${EMBEDDING_MAX_RETRIES} retries`);
 }
 
 // ---------------------------------------------------------------------------

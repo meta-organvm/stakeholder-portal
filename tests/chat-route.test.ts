@@ -274,9 +274,8 @@ describe("POST /api/chat", () => {
     expect(res.status).toBe(200);
 
     const body = await res.text();
-    expect(body).toContain("ORGANVM Snapshot Response");
-    expect(body).toContain("live OSS model path is currently unavailable");
-    expect(body).toContain("The AI assistant is temporarily unavailable");
+    expect(body).toContain("Unable to Reach AI Model");
+    expect(body).toContain("could not reach the language model");
     expect(body).not.toContain("GROQ_API_KEY");
     expect(body).not.toContain("OSS_LLM_API_URL");
     expect(body).toContain("\"strategy\":\"offline_fallback\"");
