@@ -863,22 +863,32 @@ export async function POST(request: Request) {
         }, personaId),
       });
 
+      const innerReader = providerResponse.stream.getReader();
+      let streamEnded = false;
       const composedStream = new ReadableStream<Uint8Array>({
-        async start(controller) {
-          const reader = providerResponse.stream.getReader();
+        async pull(controller) {
+          if (streamEnded) {
+            controller.close();
+            return;
+          }
           try {
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              controller.enqueue(value);
+            const { done, value } = await innerReader.read();
+            if (done) {
+              controller.enqueue(encoder.encode(`data: ${metaChunk}\n\n`));
+              controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+              streamEnded = true;
+              controller.close();
+              return;
             }
+            controller.enqueue(value);
           } catch (streamErr) {
             const errMsg = streamErr instanceof Error ? streamErr.message : "Stream error";
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: errMsg })}\n\n`));
+            controller.enqueue(encoder.encode(`data: ${metaChunk}\n\n`));
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            streamEnded = true;
+            controller.close();
           }
-          controller.enqueue(encoder.encode(`data: ${metaChunk}\n\n`));
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
         },
       });
 
