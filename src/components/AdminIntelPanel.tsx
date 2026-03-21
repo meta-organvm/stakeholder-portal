@@ -110,6 +110,8 @@ export function AdminIntelPanel() {
   }
 
   useEffect(() => {
+    // Fetch-on-mount: refreshSession is async (no synchronous setState)
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async fetch, setState on completion only
     void refreshSession();
   }, []);
 

@@ -33,7 +33,7 @@
     "@langchain/textsplitters": "1.0.1",
     "drizzle-orm": "0.45.1",
     "langchain": "1.2.30",
-    "next": "^15.3.0",
+    "next": "16.1.6",
     "next-auth": "5.0.0-beta.30",
     "pg": "8.20.0",
     "pgvector": "0.2.1",
@@ -43,7 +43,7 @@
     "yaml": "2.8.2"
   },
   "overrides": {
-    "flatted": "^3.4.1",
+    "flatted": "github:WebReflection/flatted#v3.4.2",
     "esbuild": "^0.25.12"
   },
   "devDependencies": {
@@ -56,7 +56,7 @@
     "dotenv": "17.3.1",
     "drizzle-kit": "0.31.9",
     "eslint": "^9.38.0",
-    "eslint-config-next": "^15.5.12",
+    "eslint-config-next": "16.1.6",
     "postcss": "^8.5.0",
     "tailwindcss": "^4.0.0",
     "tsx": "4.21.0",

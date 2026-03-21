@@ -242,10 +242,8 @@ export function ChatInterface() {
         return;
       }
 
-      let accumulated = "";
       let buffered = "";
       let streamDone = false;
-      let messageMeta: MessageMeta = {};
 
       while (!streamDone) {
         const { done, value } = await reader.read();
@@ -259,30 +257,37 @@ export function ChatInterface() {
         for (const data of parsedChunk.payloads) {
           try {
             const parsed = JSON.parse(data);
-            if (parsed.error) {
-              accumulated += `\n\n*${parsed.error}*`;
-            } else if (parsed.text) {
-              accumulated += parsed.text;
-            } else if (parsed.citations) {
-              // Citation metadata chunk
-              messageMeta = {
-                citations: parsed.citations,
-                confidence_score: parsed.confidence_score,
-                citation_coverage: parsed.citation_coverage,
-                strategy: parsed.strategy,
-                suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
-                answerability: parsed.answerability,
-                answerability_reason: parsed.answerability_reason,
-                diagnostics: parsed.diagnostics,
-              };
-            }
 
             setMessages((prev) => {
               const updated = [...prev];
+              const lastMsg = updated[updated.length - 1];
+              const prevContent = lastMsg.content;
+              const prevMeta = lastMsg.meta ?? {};
+
+              let content = prevContent;
+              let meta = prevMeta;
+
+              if (parsed.error) {
+                content = prevContent + `\n\n*${parsed.error}*`;
+              } else if (parsed.text) {
+                content = prevContent + parsed.text;
+              } else if (parsed.citations) {
+                meta = {
+                  citations: parsed.citations,
+                  confidence_score: parsed.confidence_score,
+                  citation_coverage: parsed.citation_coverage,
+                  strategy: parsed.strategy,
+                  suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
+                  answerability: parsed.answerability,
+                  answerability_reason: parsed.answerability_reason,
+                  diagnostics: parsed.diagnostics,
+                };
+              }
+
               updated[updated.length - 1] = {
                 role: "assistant",
-                content: accumulated,
-                meta: messageMeta,
+                content,
+                meta,
               };
               return updated;
             });

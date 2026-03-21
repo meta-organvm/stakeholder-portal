@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-21T16:33:09.003Z",
+  "generated": "2026-03-21T16:51:40.269Z",
   "system": {
     "name": "ORGANVM",
     "tagline": "Eight-organ creative-institutional system",
@@ -2858,10 +2858,10 @@
       "deployment_urls": [],
       "github_url": "https://github.com/meta-organvm/organvm-engine",
       "git_stats": {
-        "total_commits": 145,
+        "total_commits": 147,
         "first_commit": "2026-02-17",
         "last_commit": "2026-03-21",
-        "weekly_velocity": 32.5
+        "weekly_velocity": 33
       },
       "sections": {},
       "ai_context": "Organvm Engine (organvm-engine) — META-ORGANVM. Core Python package — governance, registry, seed discovery, metrics, dispatch, and unified CLI for the eight-organ system. Consolidates ~30 standalone scripts into a proper installable package.",

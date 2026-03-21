@@ -33,7 +33,8 @@ export default async function DashboardPage() {
       };
     }
 
-    const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
     const history = await db
       .select({ density: pulseSnapshots.density })
       .from(pulseSnapshots)
