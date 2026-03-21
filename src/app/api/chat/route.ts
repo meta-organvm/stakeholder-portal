@@ -67,6 +67,22 @@ interface ChatDiagnostics {
   };
 }
 
+// Issue #2: Strip known ad-injection patterns from OSS LLM providers
+const AD_PATTERNS = [
+  /\n*[-—–]*\s*(?:Powered|Generated|Created|Made|Supported)\s+by\s+\S+\.?\s*(?:AI|\.ai|\.com|\.org)?\s*[-—–]*/gi,
+  /\n*\[?\s*(?:Support|Try|Visit|Check out)\s+\S+\.(?:ai|com|org)\s*\]?\s*$/gim,
+  /\n*(?:This response was|Response) (?:generated|powered|created) (?:by|with|using) \S+\.?\s*/gi,
+  /\n*---\s*\n*(?:.*pollinations.*|.*openrouter.*|.*together\.ai.*)\s*$/gim,
+];
+
+function stripAdInjection(text: string): string {
+  let cleaned = text;
+  for (const pattern of AD_PATTERNS) {
+    cleaned = cleaned.replace(pattern, "");
+  }
+  return cleaned.trimEnd();
+}
+
 function normalizeText(input: string): string {
   return input
     .toLowerCase()
@@ -300,26 +316,32 @@ type ProviderConfig = {
   providerName: string;
 };
 
-function getProviderConfig(): ProviderConfig {
+/** Issue #2: Returns ordered cascade of providers — Groq primary, OSS fallback */
+function getProviderCascade(): ProviderConfig[] {
+  const providers: ProviderConfig[] = [];
+
   // allow-secret: env lookup only, no hardcoded credential.
   const groqApiKey = process.env.GROQ_API_KEY;
   if (groqApiKey) {
-    return {
+    providers.push({
       apiUrl: process.env.GROQ_API_URL || DEFAULT_GROQ_API_URL,
       model: process.env.GROQ_MODEL || DEFAULT_GROQ_MODEL,
       apiKey: groqApiKey, // allow-secret: env-derived token pass-through.
       providerName: "Groq",
-    };
+    });
   }
 
-  return {
+  providers.push({
     // allow-secret: optional env lookup for provider token.
     apiUrl: process.env.OSS_LLM_API_URL || DEFAULT_OSS_LLM_API_URL,
     model: process.env.OSS_LLM_MODEL || DEFAULT_OSS_LLM_MODEL,
     apiKey: process.env.OSS_LLM_API_KEY, // allow-secret: env-derived token pass-through.
     providerName: "anonymous OSS fallback",
-  };
+  });
+
+  return providers;
 }
+
 
 function extractProviderText(data: OpenAICompatibleResponse): string | null {
   const content = data.choices?.[0]?.message?.content;
@@ -350,7 +372,30 @@ async function generateModelResponse(
   modelConfig?: { temperature?: number; max_tokens?: number },
   estimatedCost?: number
 ): Promise<ModelResponse> {
-  const provider = getProviderConfig();
+  // Issue #2: Try providers in cascade order — Groq first, OSS fallback
+  const cascade = getProviderCascade();
+  let lastError: Error | null = null;
+
+  for (const provider of cascade) {
+    try {
+      return await callProvider(provider, messages, systemPrompt, modelConfig, estimatedCost);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+      console.warn(`[chat] Provider ${provider.providerName} failed: ${lastError.message}`);
+      incrementCounter("chat.provider_cascade_fallback_total", 1, { from: provider.providerName });
+    }
+  }
+
+  throw lastError ?? new Error("All providers failed");
+}
+
+async function callProvider(
+  provider: ProviderConfig,
+  messages: ChatMessage[],
+  systemPrompt: string,
+  modelConfig?: { temperature?: number; max_tokens?: number },
+  estimatedCost?: number
+): Promise<ModelResponse> {
 
   const timeoutMs = Math.min(60_000, 15_000 + (estimatedCost ?? 5) * 3_000);
   const controller = new AbortController();
@@ -871,9 +916,16 @@ export async function POST(request: Request) {
     if (queryPlan.answerability !== "answerable" && cited.has_unsupported_claims) {
       finalResponseText += "\n\n---\n*Note: Some claims in this response could not be verified against indexed sources. Treat unverified details with appropriate caution.*";
     }
+
+    // Issue #1: Stale-context warning when best sources are aged
+    const agedSources = cited.citations.filter((c) => c.freshness < 0.5);
+    if (agedSources.length > 0 && agedSources.length >= cited.citations.length * 0.5) {
+      const oldestLabel = agedSources[0]?.freshness_label ?? "aged";
+      finalResponseText += `\n\n---\n*Context freshness: Most sources used in this answer are **${oldestLabel}**. For the most current information, the knowledge base may need re-indexing.*`;
+    }
     trackChatPath("hybrid_retrieval", requestStartedAtMs);
     return createSseResponse(
-      maskPii(finalResponseText),
+      maskPii(stripAdInjection(finalResponseText)),
       cited.citations,
       {
         confidence: cited.confidence_score,

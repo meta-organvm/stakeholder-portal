@@ -1,0 +1,45 @@
+name: Ingestion Health Check
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ingest-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
+
+    steps:
+      - name: Check database availability
+        id: db-check
+        run: |
+          if [ -z "${{ secrets.DATABASE_URL }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::DATABASE_URL not configured — skipping ingestion health check"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run ingestion health check
+        if: steps.db-check.outputs.skip != 'true'
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          DEPLOY_URL: ${{ vars.DEPLOY_URL || 'https://stakeholder-portal-ten.vercel.app' }}
+        run: |
+          RESPONSE=$(curl -sf \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            "${DEPLOY_URL}/api/cron/ingest" 2>&1) || {
+            echo "::warning::Ingestion health check failed or endpoint unreachable"
+            exit 0
+          }
+          echo "$RESPONSE" | python3 -m json.tool
+          STALE=$(echo "$RESPONSE" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('chunks',{}).get('stale_7d',0))")
+          if [ "$STALE" -gt 1000 ]; then
+            echo "::warning::${STALE} chunks are older than 7 days — consider running incremental ingestion"
+          fi
