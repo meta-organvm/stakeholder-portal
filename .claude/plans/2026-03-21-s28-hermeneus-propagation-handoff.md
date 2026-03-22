@@ -2,7 +2,7 @@
 
 **Session:** S28 (Hermeneus remediation + features)
 **Date:** 2026-03-21
-**Status:** 4 items require next-session execution
+**Status:** ALL EXECUTED — 0 remaining. Companion indices deferred (blocked on IRF-IDX-001/002/003).
 
 ---
 
