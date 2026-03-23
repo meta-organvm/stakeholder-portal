@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  quality:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
