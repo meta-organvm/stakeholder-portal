@@ -152,6 +152,11 @@ Copy `.env.example` → `.env`. Key variable groups:
 - Branch protection: requires `test` check (non-strict, doesn't require up-to-date branch)
 - Vercel deploys automatically on push via GitHub integration
 - Gemini CLI may trigger duplicate Vercel deployments alongside the GitHub integration
+- Vercel team `ivviiviivvi` (team_bE3F62pxdvINJLUQbEmEOMKi): 3 active projects (stakeholder-portal, specvla-ergon--avditor-mvndi, peer-audited--behavioral-blockchain), 0 custom domains
+
+## Propagation Discipline
+
+When completing work, the 10-index propagation checklist is MANDATORY (see IRF header). **Every index is always applicable** — if this session didn't advance an index, identify the gap and log it as a new IRF item. Never mark "N/A." The default is check-all-10 and consciously execute or document the vacuum, not check-none.
 
 ## Conventions
 
