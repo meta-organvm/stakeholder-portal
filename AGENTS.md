@@ -7,7 +7,9 @@ This repo participates in the **META-ORGANVM (Meta)** swarm.
 - *No active event subscriptions*
 
 ### Production Responsibilities
-- **Produce** `stakeholder-intelligence-ui` for external-stakeholders
+- **Produce** `hermeneus-intelligence-ui` for external-stakeholders, internal-operators
+- **Produce** `llm-health-api` for unspecified
+- **Produce** `ingestion-health-api` for unspecified
 
 ### External Dependencies
 - **Consume** `registry-v2.json` from `organvm-corpvs-testamentvm`
@@ -18,5 +20,5 @@ This repo participates in the **META-ORGANVM (Meta)** swarm.
 - Adhere to unidirectional flow: I→II→III
 - Never commit secrets or credentials
 
-*Last synced: 2026-03-21T13:21:05Z*
+*Last synced: 2026-03-25T22:27:21Z*
 <!-- ORGANVM:AUTO:END -->

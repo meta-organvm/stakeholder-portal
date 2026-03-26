@@ -5,18 +5,20 @@
 **Org:** `meta-organvm` | **Repo:** `stakeholder-portal`
 
 ### Edges
-- **Produces** → `external-stakeholders`: stakeholder-intelligence-ui
+- **Produces** → `external-stakeholders, internal-operators`: hermeneus-intelligence-ui
+- **Produces** → `unspecified`: llm-health-api
+- **Produces** → `unspecified`: ingestion-health-api
 - **Consumes** ← `organvm-corpvs-testamentvm`: registry-v2.json
 - **Consumes** ← `organvm-corpvs-testamentvm`: system-metrics.json
 - **Consumes** ← `organvm-engine`: organvm-engine
 
 ### Siblings in Meta
-`.github`, `organvm-corpvs-testamentvm`, `alchemia-ingestvm`, `schema-definitions`, `organvm-engine`, `system-dashboard`, `organvm-mcp-server`, `praxis-perpetua`, `materia-collider`, `organvm-ontologia`, `vigiles-aeternae--agon-cosmogonicum`
+`.github`, `organvm-corpvs-testamentvm`, `alchemia-ingestvm`, `schema-definitions`, `organvm-engine`, `system-dashboard`, `organvm-mcp-server`, `praxis-perpetua`, `materia-collider`, `organvm-ontologia`, `vigiles-aeternae--agon-cosmogonicum`, `cvrsvs-honorvm`
 
 ### Governance
 - *Standard ORGANVM governance applies*
 
-*Last synced: 2026-03-21T13:21:05Z*
+*Last synced: 2026-03-25T22:27:21Z*
 
 ## Session Review Protocol
 
@@ -92,6 +94,7 @@ Transcripts are on-demand (never committed):
 | unknown | any | ira-grade-norming | SOP: Diagnostic Inter-Rater Agreement (IRA) Grade Norming |
 | unknown | any | ira-grade-norming | ira-grade-norming |
 | unknown | any | pitch-deck-rollout | SOP: Pitch Deck Generation & Rollout |
+| unknown | any | SOP-TRIADIC-REVIEW-PROTOCOL | Triadic Review Protocol (TRP) |
 
 Linked skills: cicd-resilience-and-recovery, continuous-learning-agent, cross-agent-handoff, evaluation-to-growth, genesis-dna, multi-agent-workforce-planner, promotion-and-state-transitions, quality-gate-baseline-calibration, repo-onboarding-and-habitat-creation, session-self-critique, structural-integrity-audit
 
@@ -145,31 +148,31 @@ Resolve: `organvm ontologia resolve stakeholder-portal` | History: `organvm onto
 
 | Variable | Value | Scope | Updated |
 |----------|-------|-------|---------|
-| `active_repos` | 62 | global | 2026-03-21 |
-| `archived_repos` | 53 | global | 2026-03-21 |
-| `ci_workflows` | 104 | global | 2026-03-21 |
-| `code_files` | 23121 | global | 2026-03-21 |
-| `dependency_edges` | 55 | global | 2026-03-21 |
-| `operational_organs` | 8 | global | 2026-03-21 |
-| `published_essays` | 0 | global | 2026-03-21 |
-| `repos_with_tests` | 47 | global | 2026-03-21 |
-| `sprints_completed` | 0 | global | 2026-03-21 |
-| `test_files` | 4337 | global | 2026-03-21 |
-| `total_organs` | 8 | global | 2026-03-21 |
-| `total_repos` | 116 | global | 2026-03-21 |
-| `total_words_formatted` | 740,907 | global | 2026-03-21 |
-| `total_words_numeric` | 740907 | global | 2026-03-21 |
-| `total_words_short` | 741K+ | global | 2026-03-21 |
+| `active_repos` | 64 | global | 2026-03-25 |
+| `archived_repos` | 54 | global | 2026-03-25 |
+| `ci_workflows` | 106 | global | 2026-03-25 |
+| `code_files` | 0 | global | 2026-03-25 |
+| `dependency_edges` | 60 | global | 2026-03-25 |
+| `operational_organs` | 8 | global | 2026-03-25 |
+| `published_essays` | 29 | global | 2026-03-25 |
+| `repos_with_tests` | 0 | global | 2026-03-25 |
+| `sprints_completed` | 33 | global | 2026-03-25 |
+| `test_files` | 0 | global | 2026-03-25 |
+| `total_organs` | 8 | global | 2026-03-25 |
+| `total_repos` | 127 | global | 2026-03-25 |
+| `total_words_formatted` | 0 | global | 2026-03-25 |
+| `total_words_numeric` | 0 | global | 2026-03-25 |
+| `total_words_short` | 0K+ | global | 2026-03-25 |
 
-Metrics: 9 registered | Observations: 8632 recorded
+Metrics: 9 registered | Observations: 15536 recorded
 Resolve: `organvm ontologia status` | Refresh: `organvm refresh`
 
 
 ## System Density (auto-generated)
 
-AMMOI: 54% | Edges: 28 | Tensions: 33 | Clusters: 5 | Adv: 3 | Events(24h): 14977
-Structure: 8 organs / 117 repos / 1654 components (depth 17) | Inference: 98% | Organs: META-ORGANVM:66%, ORGAN-I:55%, ORGAN-II:47%, ORGAN-III:56% +4 more
-Last pulse: 2026-03-21T13:20:54 | Δ24h: n/a | Δ7d: n/a
+AMMOI: 56% | Edges: 41 | Tensions: 33 | Clusters: 5 | Adv: 7 | Events(24h): 23754
+Structure: 8 organs / 127 repos / 1654 components (depth 17) | Inference: 98% | Organs: META-ORGANVM:64%, ORGAN-I:55%, ORGAN-II:47%, ORGAN-III:55% +4 more
+Last pulse: 2026-03-25T22:27:04 | Δ24h: +3.5% | Δ7d: n/a
 
 
 ## Dialect Identity (Trivium)
