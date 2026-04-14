@@ -33,7 +33,7 @@
     "@langchain/textsplitters": "1.0.1",
     "drizzle-orm": "0.45.1",
     "langchain": "1.2.35",
-    "next": "16.2.1",
+    "next": "16.2.3",
     "next-auth": "5.0.0-beta.30",
     "pg": "8.20.0",
     "pgvector": "0.2.1",
