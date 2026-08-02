@@ -45,7 +45,7 @@
   "overrides": {
     "flatted": "https://github.com/WebReflection/flatted/archive/refs/tags/v3.4.2.tar.gz",
     "esbuild": "^0.25.12",
-    "postcss": "8.5.15"
+    "postcss": "8.5.18"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
@@ -58,7 +58,7 @@
     "drizzle-kit": "0.31.10",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.9",
-    "postcss": "8.5.15",
+    "postcss": "8.5.18",
     "tailwindcss": "4.3.1",
     "tsx": "4.22.4",
     "typescript": "^6.0.3",
